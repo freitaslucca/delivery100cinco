@@ -26,7 +26,8 @@ document.addEventListener('DOMContentLoaded', function() {
             productDiv.innerHTML = `
                 <img src="${product.image}" alt="${product.name}">
                 <h3>${product.name}</h3>
-                <p>R$ ${product.price.toFixed(2)}</p>
+                <p class="price">R$ ${product.price.toFixed(2)}</p>
+                <p class="kilo">(Pacote 1 Kg)</p>
                 <button onclick="addToCart(${product.id})">Adicionar ao Carrinho</button>
             `;
             productList.appendChild(productDiv);
