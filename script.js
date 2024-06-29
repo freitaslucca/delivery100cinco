@@ -14,6 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartCount = document.getElementById('cartCount');
     const cartSummary = document.getElementById('cartSummary');
     const cartSummaryText = document.getElementById('cartSummaryText');
+    const emptyCartMessage = document.getElementById('emptyCartMessage'); // Adicionado
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
     function renderProducts(productsToRender) {
@@ -31,11 +32,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function searchProducts() {
+    function debounce(func, wait) {
+        let timeout;
+        return function(...args) {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => func.apply(this, args), wait);
+        };
+    }
+
+    const searchProducts = debounce(function() {
         const searchTerm = searchInput.value.toLowerCase();
         const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm));
         renderProducts(filteredProducts);
-    }
+    }, 300);
 
     searchButton.addEventListener('click', searchProducts);
     searchInput.addEventListener('keyup', searchProducts);
@@ -61,19 +70,24 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCart() {
         cartItems.innerHTML = '';
-        cart.forEach((item, index) => {
-            const cartItemDiv = document.createElement('div');
-            cartItemDiv.classList.add('cart-item');
-            cartItemDiv.innerHTML = `
-                <span>${item.name} - ${item.quantity} x R$ ${item.price.toFixed(2)}</span>
-                <div class="cart-item-controls">
-                    <button onclick="increaseQuantity(${index})">+</button>
-                    <button onclick="decreaseQuantity(${index})">-</button>
-                    <button onclick="removeItem(${index})"><span class="icon-trash">🗑️</span></button>
-                </div>
-            `;
-            cartItems.appendChild(cartItemDiv);
-        });
+        if (cart.length === 0) {
+            emptyCartMessage.style.display = 'block';
+        } else {
+            emptyCartMessage.style.display = 'none';
+            cart.forEach((item, index) => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.classList.add('cart-item');
+                cartItemDiv.innerHTML = `
+                    <span>${item.name} - ${item.quantity} x R$ ${item.price.toFixed(2)}</span>
+                    <div class="cart-item-controls">
+                        <button onclick="increaseQuantity(${index})">+</button>
+                        <button onclick="decreaseQuantity(${index})">-</button>
+                        <button onclick="removeItem(${index})"><span class="icon-trash">🗑️</span></button>
+                    </div>
+                `;
+                cartItems.appendChild(cartItemDiv);
+            });
+        }
     }
 
     window.increaseQuantity = function(index) {
@@ -113,6 +127,10 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     document.getElementById('checkoutButton').addEventListener('click', function() {
+        if (cart.length === 0) {
+            alert("Seu carrinho está vazio. Adicione produtos antes de finalizar o pedido."); // Adicionado
+            return;
+        }
         window.location.href = 'checkout.html';
     });
 
@@ -130,6 +148,7 @@ document.addEventListener('DOMContentLoaded', function() {
             cartSummary.style.display = 'none';
         }
     }
+    
 
     renderProducts(products);
     updateCartCount();

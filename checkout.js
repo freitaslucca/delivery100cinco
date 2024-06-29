@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const orderItems = document.getElementById('orderItems');
     const orderTotal = document.getElementById('orderTotal');
     const deliveryFeeMessage = document.getElementById('deliveryFeeMessage');
-    
+
     function renderOrderSummary() {
         let total = 0;
-        orderItems.innerHTML = ''; // Clear the list before rendering
+        orderItems.innerHTML = '';
         cart.forEach((item, index) => {
             const orderItem = document.createElement('li');
             orderItem.innerHTML = `
@@ -68,15 +68,20 @@ document.addEventListener('DOMContentLoaded', function() {
         const phone = document.getElementById('phone').value;
         const payment = document.getElementById('payment').value;
 
-        const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
         const total = parseFloat(orderTotal.textContent);
+        if (total <= 0) {
+            alert("Seu pedido está vazio, adicione um produto para finalizar a compra."); // Adicionado
+            return;
+        }
+
+        const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
         const deliveryFee = city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba' ? 7 : 'Consultar via WhatsApp';
         const finalTotal = typeof deliveryFee === 'number' ? total + deliveryFee : total;
         const deliveryFeeText = typeof deliveryFee === 'number' ? `Taxa de entrega: R$ ${deliveryFee.toFixed(2)}` : deliveryFee;
-        
+
         const fullOrderSummary = `Nome: ${fullName}\nCEP: ${cep}\nEndereço: ${address}, Número: ${number}, Complemento: ${complement}\nCidade: ${city}\nTelefone: ${phone}\nForma de Pagamento: ${payment}\nData de Entrega: ${deliveryDate}\n\nPedido:\n${orderSummary}\nTotal: R$ ${total.toFixed(2)}\n${deliveryFeeText}\nTotal Final: R$ ${finalTotal.toFixed(2)}`;
 
-        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(fullOrderSummary)}`;
+        const whatsappUrl = `https://wa.me/+554792501005?text=${encodeURIComponent(fullOrderSummary)}`;
         window.location.href = whatsappUrl;
 
         // Esvaziar o carrinho após confirmar o pedido
