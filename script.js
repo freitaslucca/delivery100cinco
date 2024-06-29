@@ -3,7 +3,9 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 1, name: 'Abacaxi', price: 34.9, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-2.png' },
         { id: 2, name: 'Abacaxi com Hortelã', price: 36, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-hortela-2.png' },
         { id: 3, name: 'Açaí', price: 34, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acai-2.png' },
-        { id: 4, name: 'Acerola', price: 27, image:'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png'}
+        { id: 4, name: 'Acerola', price: 27, image:'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png'},
+        { id: 5, name: 'Acerola com Laranja', price: 27, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png'},
+
     ];
 
     const productList = document.getElementById('productList');
