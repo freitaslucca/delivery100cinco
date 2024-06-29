@@ -85,23 +85,27 @@ h1 {
 }
 
 .product {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center;
     background: white;
-    padding: px;
+    padding: 0px;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
-    flex: 1 1 calc(33.333% - 40px);
+    flex: 1 1 calc(5.333% - 40px);
     margin: 10px;
-    max-width: 15%;
 }
 
 .product img {
-    max-width: 90%;
+    max-width: 50%;
     height: auto;
-    margin-bottom: 0;
+    margin-bottom: 10px;
 }
 
 .product button {
+    margin-top: 10px; /* Adiciona um pouco de espaço acima do botão */
     background-color: #007bff;
     color: white;
     border: none;
