@@ -4,8 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 2, name: 'Abacaxi com Hortelã', price: 36, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-hortela-2.png' },
         { id: 3, name: 'Açaí', price: 34, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acai-2.png' },
         { id: 4, name: 'Acerola', price: 27, image:'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png'},
-        { id: 5, name: 'Acerola com Laranja', price: 27, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png'},
-
+        { id: 5, name: 'Acerola com Laranja', price: 27, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png' }
     ];
 
     const productList = document.getElementById('productList');
@@ -144,7 +143,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateCartSummary() {
         if (cart.length > 0) {
             const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            cartSummaryText.textContent = `Total sem a entrega: R$ ${total.toFixed(2)} / ${cart.length} item(s)`;
+            const itemCount = cart.reduce((sum, item) => sum + item.quantity, 0); // Total de unidades
+            cartSummaryText.textContent = `Total sem a entrega: R$ ${total.toFixed(2)} / ${itemCount} item(s)`;
             cartSummary.style.display = 'flex';
         } else {
             cartSummary.style.display = 'none';
