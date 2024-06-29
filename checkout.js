@@ -1,24 +1,8 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const homeButton = document.getElementById('homeButton');
-    homeButton.addEventListener('click', function() {
-        window.location.href = 'index.html';
-    });
-
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const orderItems = document.getElementById('orderItems');
     const orderTotal = document.getElementById('orderTotal');
     const deliveryFeeMessage = document.getElementById('deliveryFeeMessage');
-
-    function showMessage(message, type) {
-        const messageContainer = document.getElementById('messageContainer');
-        messageContainer.textContent = message;
-        messageContainer.className = 'message-container ' + (type === 'success' ? 'message-success' : 'message-error');
-        messageContainer.style.display = 'block';
-
-        setTimeout(() => {
-            messageContainer.style.display = 'none';
-        }, 5000);
-    }
 
     function renderOrderSummary() {
         let total = 0;
@@ -86,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const total = parseFloat(orderTotal.textContent);
         if (total <= 0) {
-            showMessage("Seu pedido está vazio, adicione um produto para finalizar a compra.", 'error');
+            alert("Seu pedido está vazio, adicione um produto para finalizar a compra."); // Adicionado
             return;
         }
 
@@ -99,8 +83,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const whatsappUrl = `https://wa.me/+554792501005?text=${encodeURIComponent(fullOrderSummary)}`;
         window.location.href = whatsappUrl;
-
-        showMessage("Pedido finalizado com sucesso!", 'success');
 
         // Esvaziar o carrinho após confirmar o pedido
         localStorage.removeItem('cart');
@@ -118,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         updateDeliveryFee(data.localidade);
                     }
                 })
-                .catch(error => showMessage('Erro ao buscar o CEP: ' + error, 'error'));
+                .catch(error => console.error('Erro ao buscar o CEP:', error));
         }
     });
 

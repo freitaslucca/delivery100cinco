@@ -148,7 +148,6 @@ document.addEventListener('DOMContentLoaded', function() {
             cartSummary.style.display = 'none';
         }
     }
-    
 
     renderProducts(products);
     updateCartCount();
