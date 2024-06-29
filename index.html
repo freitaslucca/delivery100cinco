@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja de Produtos</title>
+    <title>100 Cinco</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>Loja de Produtos</h1>
+        <h1>Pedidos 100 Cinco</h1>
         <a href="#" id="cartLink" class="cart-link">
             <i class="fas fa-shopping-cart"></i>
             <span id="cartCount" class="cart-count">0</span>
         </a>
     </header>
+    <div class="search-container">
+        <input type="text" id="searchInput" placeholder="Pesquisar produtos...">
+        <button id="searchButton" class="search-button"><i class="fas fa-search"></i></button>
+    </div>
     <main>
         <div id="productList" class="product-list"></div>
     </main>

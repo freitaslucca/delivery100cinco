@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', function() {
     ];
 
     const productList = document.getElementById('productList');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
     const cartModal = document.getElementById('cartModal');
     const cartItems = document.getElementById('cartItems');
     const cartCount = document.getElementById('cartCount');
@@ -14,8 +16,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartSummaryText = document.getElementById('cartSummaryText');
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    function renderProducts() {
-        products.forEach(product => {
+    function renderProducts(productsToRender) {
+        productList.innerHTML = '';
+        productsToRender.forEach(product => {
             const productDiv = document.createElement('div');
             productDiv.classList.add('product');
             productDiv.innerHTML = `
@@ -27,6 +30,15 @@ document.addEventListener('DOMContentLoaded', function() {
             productList.appendChild(productDiv);
         });
     }
+
+    function searchProducts() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchTerm));
+        renderProducts(filteredProducts);
+    }
+
+    searchButton.addEventListener('click', searchProducts);
+    searchInput.addEventListener('keyup', searchProducts);
 
     window.addToCart = function(productId) {
         const product = products.find(p => p.id === productId);
@@ -119,7 +131,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    renderProducts();
+    renderProducts(products);
     updateCartCount();
     updateCartSummary();
 });
