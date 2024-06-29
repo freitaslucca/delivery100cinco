@@ -152,7 +152,7 @@ h1 {
 
 form {
     max-width: 600px;
-    width: 100%;
+    width: auto;
     margin: 20px auto;
     padding: 20px;
     background: white;
