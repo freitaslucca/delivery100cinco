@@ -204,6 +204,7 @@ input, select {
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box; /* Adicionado para garantir que o padding seja incluído na largura total */
+    font-size: 16px;
 }
 
 button {
