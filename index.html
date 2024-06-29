@@ -3,24 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>100 Cinco</title>
+    <title>Loja de Produtos</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 <body>
     <header>
-        <h1>100 Cinco Distribuidora</h1>
-        <div class="cart">
-            <a href="#" id="cartLink">Carrinho (<span id="cartCount">0</span>)</a>
-        </div>
+        <h1>Loja de Produtos</h1>
+        <a href="#" id="cartLink" class="cart-link">
+            <i class="fas fa-shopping-cart"></i>
+            <span id="cartCount" class="cart-count">0</span>
+        </a>
     </header>
     <main>
-        <div class="product-list" id="productList">
-            <!-- Lista de produtos será gerada dinamicamente aqui -->
-        </div>
+        <div id="productList" class="product-list"></div>
     </main>
-    <div class="cart-modal" id="cartModal">
+    <div id="cartSummary" class="cart-summary">
+        <div class="cart-summary-content">
+            <p id="cartSummaryText"></p>
+            <button id="viewCartButton">Ver Carrinho</button>
+        </div>
+    </div>
+    <div id="cartModal" class="cart-modal">
         <div class="cart-content">
-            <h2>Seu Carrinho</h2>
+            <h2>Carrinho</h2>
             <div id="cartItems"></div>
             <button id="checkoutButton">Finalizar Pedido</button>
             <button id="closeCart">Fechar</button>

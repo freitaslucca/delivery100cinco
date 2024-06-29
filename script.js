@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const cartModal = document.getElementById('cartModal');
     const cartItems = document.getElementById('cartItems');
     const cartCount = document.getElementById('cartCount');
+    const cartSummary = document.getElementById('cartSummary');
+    const cartSummaryText = document.getElementById('cartSummaryText');
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
     function renderProducts() {
@@ -38,6 +40,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
+        updateCartSummary();
     }
 
     function updateCartCount() {
@@ -46,11 +49,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCart() {
         cartItems.innerHTML = '';
-        cart.forEach(item => {
+        cart.forEach((item, index) => {
             const cartItemDiv = document.createElement('div');
-            cartItemDiv.textContent = `${item.name} - ${item.quantity} x R$ ${item.price.toFixed(2)}`;
+            cartItemDiv.classList.add('cart-item');
+            cartItemDiv.innerHTML = `
+                <span>${item.name} - ${item.quantity} x R$ ${item.price.toFixed(2)}</span>
+                <div class="cart-item-controls">
+                    <button onclick="increaseQuantity(${index})">+</button>
+                    <button onclick="decreaseQuantity(${index})">-</button>
+                    <button onclick="removeItem(${index})"><span class="icon-trash">🗑️</span></button>
+                </div>
+            `;
             cartItems.appendChild(cartItemDiv);
         });
+    }
+
+    window.increaseQuantity = function(index) {
+        cart[index].quantity++;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        updateCartCount();
+        updateCartSummary();
+    }
+
+    window.decreaseQuantity = function(index) {
+        if (cart[index].quantity > 1) {
+            cart[index].quantity--;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderCart();
+            updateCartCount();
+            updateCartSummary();
+        }
+    }
+
+    window.removeItem = function(index) {
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+        updateCartCount();
+        updateCartSummary();
     }
 
     document.getElementById('cartLink').addEventListener('click', function(e) {
@@ -67,6 +104,22 @@ document.addEventListener('DOMContentLoaded', function() {
         window.location.href = 'checkout.html';
     });
 
+    document.getElementById('viewCartButton').addEventListener('click', function() {
+        renderCart();
+        cartModal.style.display = 'flex';
+    });
+
+    function updateCartSummary() {
+        if (cart.length > 0) {
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            cartSummaryText.textContent = `Total sem a entrega: R$ ${total.toFixed(2)} / ${cart.length} item(s)`;
+            cartSummary.style.display = 'flex';
+        } else {
+            cartSummary.style.display = 'none';
+        }
+    }
+
     renderProducts();
     updateCartCount();
+    updateCartSummary();
 });
