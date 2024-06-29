@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>100 Cinco</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>100 Cinco Distribuidora</h1>
+        <div class="cart">
+            <a href="#" id="cartLink">Carrinho (<span id="cartCount">0</span>)</a>
+        </div>
+    </header>
+    <main>
+        <div class="product-list" id="productList">
+            <!-- Lista de produtos será gerada dinamicamente aqui -->
+        </div>
+    </main>
+    <div class="cart-modal" id="cartModal">
+        <div class="cart-content">
+            <h2>Seu Carrinho</h2>
+            <div id="cartItems"></div>
+            <button id="checkoutButton">Finalizar Pedido</button>
+            <button id="closeCart">Fechar</button>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
