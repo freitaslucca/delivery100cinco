@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function updateDeliveryFee(city) {
         if (city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba') {
-            deliveryFeeMessage.textContent = 'A taxa de entrega é R$ 7,00.';
+            deliveryFeeMessage.textContent = 'Investimento de entrega: R$ 7,00.';
         } else {
             deliveryFeeMessage.textContent = 'Para outras regiões, consulte o valor da taxa de entrega via WhatsApp.';
         }
@@ -77,9 +77,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
         const deliveryFee = city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba' ? 7 : 'Consultar via WhatsApp';
         const finalTotal = typeof deliveryFee === 'number' ? total + deliveryFee : total;
-        const deliveryFeeText = typeof deliveryFee === 'number' ? `Taxa de entrega: R$ ${deliveryFee.toFixed(2)}` : deliveryFee;
+        const deliveryFeeText = typeof deliveryFee === 'number' ? `Investimento de entrega: R$ ${deliveryFee.toFixed(2)}` : deliveryFee;
 
-        const fullOrderSummary = `Nome: ${fullName}\nCEP: ${cep}\nEndereço: ${address}, Número: ${number}, Complemento: ${complement}\nCidade: ${city}\nTelefone: ${phone}\nForma de Pagamento: ${payment}\nData de Entrega: ${deliveryDate}\n\nPedido:\n${orderSummary}\nTotal: R$ ${total.toFixed(2)}\n${deliveryFeeText}\nTotal Final: R$ ${finalTotal.toFixed(2)}`;
+        const fullOrderSummary = `*Novo pedido!*\n*Nome:* ${fullName}\n*CEP:* ${cep}\n*Endereço:* ${address}, Número: ${number}\n*Complemento:* ${complement}\n*Cidade:* ${city}\n*Telefone:* ${phone}\n\n*Pedido:*\n${orderSummary}\n\n*Forma de Pagamento:* ${payment}\n${deliveryFeeText}\n*Total Final:* R$ ${finalTotal.toFixed(2)}`;
 
         const whatsappUrl = `https://wa.me/+554792501005?text=${encodeURIComponent(fullOrderSummary)}`;
         window.location.href = whatsappUrl;
