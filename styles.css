@@ -113,8 +113,11 @@ h1 {
     max-width: 50%;
     height: auto;
     margin-bottom: 10px;
+    transition: transform 0.3s ease-in-out;
 }
-
+.product img:hover {
+    transform: scale(1.1); /* Aumenta a imagem em 10% quando o mouse passa sobre ela */
+}
 .product button {
     margin-top: 10px; /* Adiciona um pouco de espaço acima do botão */
     background-color: #007bff;
@@ -238,52 +241,107 @@ button:hover {
 .search-button:hover {
     background-color: #0056b3;
 }
+/* Estilos para melhorar o visual do resumo do pedido */
 #orderSummary {
     max-width: 600px;
     margin: 20px auto;
-    padding: 20px;
     background: white;
     border-radius: 8px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    height: 300px; /* Define uma altura fixa para o contêiner */
+
 }
 
-#orderSummary ul {
+/* Estilos para o cabeçalho fixo */
+#orderSummaryHeader {
+    padding: 20px;
+    background: white;
+    border-bottom: 1px solid #eee;
+    font-weight: bold;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+/* Estilos para o contêiner de produtos */
+#orderSummaryProducts {
+    flex: 1;
+    overflow-y: auto; /* Permite rolagem vertical */
+    padding: 20px;
+}
+
+/* Estilos para a lista de itens do pedido */
+#orderSummaryProducts ul {
     list-style: none;
     padding: 0;
+    margin: 0; /* Remove a margem padrão da lista */
 }
 
-#orderSummary ul li {
+/* Estilos para cada item do pedido */
+#orderSummaryProducts ul li {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc; /* Linha divisória entre os produtos */
 }
 
-#orderSummary .order-item-controls {
+/* Remove a borda do último item */
+#orderSummaryProducts ul li:last-child {
+    border-bottom: none;
+}
+
+/* Estilos para os controles de item do pedido */
+#orderSummaryProducts .order-item-controls {
     display: flex;
     gap: 5px;
 }
 
-#orderSummary .order-item-controls button {
+/* Estilos para os botões de controle de item do pedido */
+#orderSummaryProducts .order-item-controls button {
     border: none;
     cursor: pointer;
+    background-color: #dc3545;
 }
 
-#orderSummary .order-item-controls .icon-trash {
+/* Estilos para o ícone de lixeira */
+#orderSummaryProducts .order-item-controls .icon-trash {
     background: none;
     font-size: 16px;
 }
 
-#orderSummary .order-item-controls .quantity-control {
+/* Estilos para os botões de controle de quantidade */
+#orderSummaryProducts .order-item-controls .quantity-control {
     background-color: #007bff;
     color: white;
     padding: 5px 10px;
     border-radius: 4px;
 }
 
-#orderSummary .order-item-controls .quantity-control:hover {
+/* Estilos para o hover nos botões de controle de quantidade */
+#orderSummaryProducts .order-item-controls .quantity-control:hover {
     background-color: #0056b3;
 }
+
+/* Estilos para o rodapé fixo */
+#orderSummaryFooter {
+    padding: 20px;
+    background: white;
+    border-top: 1px solid #eee;
+    font-weight: bold;
+    position: sticky;
+    bottom: 0;
+    z-index: 10;
+    text-align: right; /* Alinha o texto à direita */
+    color: green;
+    font-size: 20px;
+    
+
+} 
+
 
 @media (max-width: 1200px) {
     .product {
