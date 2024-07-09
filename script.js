@@ -9,7 +9,7 @@ const products = [
     { id: 7, name: 'Cajá', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caja-2.png' },
     { id: 8, name: 'Caju', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caju-2.png' },
     { id: 9, name: 'Cacau', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cacau-2.png' },
-    { id: 10, name: 'Coco', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-coco-2.png' },
+    { id: 10, name: 'Coco Verde', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-coco-verde-2.png' },
     { id: 11, name: 'Cupuaçu', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cupuacu-2.png' },
     { id: 12, name: 'Frutas Vermelhas', price: 46.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-frutas-vermelhas-2.png' },
     { id: 13, name: 'Graviola', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-graviola-2.png' },
