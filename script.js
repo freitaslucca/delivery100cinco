@@ -1,11 +1,28 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const products = [
-        { id: 1, name: 'Abacaxi', price: 34.9, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-2.png' },
-        { id: 2, name: 'Abacaxi com Hortelã', price: 36, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-hortela-2.png' },
-        { id: 3, name: 'Açaí', price: 34, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acai-2.png' },
-        { id: 4, name: 'Acerola', price: 27, image:'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png'},
-        { id: 5, name: 'Acerola com Laranja', price: 27, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png' }
-    ];
+const products = [
+    { id: 1, name: 'Abacaxi com Hortelã', price: 36.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-hortela-2.png' },
+    { id: 2, name: 'Abacaxi', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-2.png' },
+    { id: 3, name: 'Açaí', price: 34.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acai-2.png' },
+    { id: 4, name: 'Acerola com Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png' },
+    { id: 5, name: 'Acerola', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png' },
+    { id: 6, name: 'Amora', price: 44.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-amora-2.png' },
+    { id: 7, name: 'Cajá', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caja-2.png' },
+    { id: 8, name: 'Caju', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caju-2.png' },
+    { id: 9, name: 'Cacau', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cacau-2.png' },
+    { id: 10, name: 'Coco', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-coco-2.png' },
+    { id: 11, name: 'Cupuaçu', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cupuacu-2.png' },
+    { id: 12, name: 'Frutas Vermelhas', price: 46.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-frutas-vermelhas-2.png' },
+    { id: 13, name: 'Graviola', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-graviola-2.png' },
+    { id: 14, name: 'Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-laranja-2.png' },
+    { id: 15, name: 'Limão', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-limao-2.png' },
+    { id: 16, name: 'Kiwi', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-kiwi-2.png' },
+    { id: 17, name: 'Mamão com Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mamao-laranja-2.png' },
+    { id: 18, name: 'Manga', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-manga-2.png' },
+    { id: 19, name: 'Morango', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-morango-2.png' },
+    { id: 20, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png' },
+    { id: 21, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png' },
+    { id: 22, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png' }
+];
 
     const productList = document.getElementById('productList');
     const searchInput = document.getElementById('searchInput');
