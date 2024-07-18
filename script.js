@@ -21,7 +21,12 @@ const products = [
     { id: 19, name: 'Morango', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-morango-2.png' },
     { id: 20, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png' },
     { id: 21, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png' },
-    { id: 22, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png' }
+    { id: 22, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png' },
+    { id: 23, name: 'Goiaba', price: 31.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-goiaba-2.png' },
+    { id: 24, name: 'Maracujá', price: 43.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-maracuja-2.png' },
+    { id: 25, name: 'Melancia', price: 25.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-melancia-2.png' },
+    { id: 26, name: 'Mista', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mista-2.png' },
+    { id: 27, name: 'Uva', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png' }
 ];
 
     const productList = document.getElementById('productList');
