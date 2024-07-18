@@ -22,11 +22,56 @@ const products = [
     { id: 20, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png' },
     { id: 21, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png' },
     { id: 22, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png' },
-    { id: 23, name: 'Goiaba', price: 31.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-goiaba-2.png' },
+    { id: 23, name: 'Goiaba', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-goiaba-2.png' },
     { id: 24, name: 'Maracujá', price: 43.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-maracuja-2.png' },
-    { id: 25, name: 'Melancia', price: 25.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-melancia-2.png' },
+    { id: 25, name: 'Melancia', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-melancia-2.png' },
     { id: 26, name: 'Mista', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mista-2.png' },
-    { id: 27, name: 'Uva', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png' }
+    { id: 27, name: 'Uva', price: 31.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png' },
+    { id: 28, name: 'Mix Detox Verde', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-verde-2.png' },
+    { id: 29, name: 'Mix Detox Roxo', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-roxo-2.png' },
+    { id: 30, name: 'Mix Detox Laranja', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-laranja-2.png' }
+];
+
+
+
+
+consegue colcoar em ordem alfabética?
+ChatGPT
+Claro! Aqui está a constante products com os itens em ordem alfabética:
+
+javascript
+Copiar código
+const products = [
+    { id: 1, name: 'Abacaxi', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-2.png' },
+    { id: 2, name: 'Abacaxi com Hortelã', price: 36.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-abacaxi-hortela-2.png' },
+    { id: 3, name: 'Açaí', price: 34.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acai-2.png' },
+    { id: 4, name: 'Acerola', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-2.png' },
+    { id: 5, name: 'Acerola com Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-acerola-laranja-2.png' },
+    { id: 6, name: 'Amora', price: 44.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-amora-2.png' },
+    { id: 7, name: 'Cacau', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cacau-2.png' },
+    { id: 8, name: 'Cajá', price: 33.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caja-2.png' },
+    { id: 9, name: 'Caju', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-caju-2.png' },
+    { id: 10, name: 'Coco Verde', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-coco-verde-2.png' },
+    { id: 11, name: 'Cupuaçu', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-cupuacu-2.png' },
+    { id: 12, name: 'Frutas Vermelhas', price: 46.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-frutas-vermelhas-2.png' },
+    { id: 13, name: 'Goiaba', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-goiaba-2.png' },
+    { id: 14, name: 'Graviola', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-graviola-2.png' },
+    { id: 15, name: 'Kiwi', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-kiwi-2.png' },
+    { id: 16, name: 'Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-laranja-2.png' },
+    { id: 17, name: 'Limão', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-limao-2.png' },
+    { id: 18, name: 'Mamão com Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mamao-laranja-2.png' },
+    { id: 19, name: 'Manga', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-manga-2.png' },
+    { id: 20, name: 'Maracujá', price: 43.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-maracuja-2.png' },
+    { id: 21, name: 'Melancia', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-melancia-2.png' },
+    { id: 22, name: 'Mista', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mista-2.png' },
+    { id: 23, name: 'Mix Detox Laranja', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-laranja-2.png' },
+    { id: 24, name: 'Mix Detox Roxo', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-roxo-2.png' },
+    { id: 25, name: 'Mix Detox Verde', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-mix-detox-verde-2.png' },
+    { id: 26, name: 'Morango', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-morango-2.png' },
+    { id: 27, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png' },
+    { id: 28, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png' },
+    { id: 29, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png' },
+    { id: 30, name: 'Uva', price: 31.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png' }
 ];
 
     const productList = document.getElementById('productList');
