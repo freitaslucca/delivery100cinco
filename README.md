@@ -19,4 +19,8 @@ Este projeto é um site de pedidos online desenvolvido para permitir que os clie
 - JavaScript
 
 ## Estrutura de Pastas
-
+-assets
+-src
+-styles
+-views
+ 
