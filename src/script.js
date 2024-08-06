@@ -25,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 23, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-banana-mamao-maca-2.png', quantityType: 'Pacote 1 Kg' },
        /* { id: 24, name: 'Detox Laranja', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa_mix_n3_128x171.png', quantityType: 'Pacote 1 Kg' },*/
         { id: 25, name: 'Detox Roxo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa_mix_n2_128x171.png', quantityType: 'Pacote 1 Kg' },
-        { id: 26, name: 'Detox Verde', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa_mix_n1_128x171.png', quantityType: 'Pacote 1 Kg' },
+       /* { id: 26, name: 'Detox Verde', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa_mix_n1_128x171.png', quantityType: 'Pacote 1 Kg' },*/
         { id: 27, name: 'Morango', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-morango-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 28, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 29, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png', quantityType: 'Pacote 1 Kg' },
