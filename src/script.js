@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-banana-mamao-maca-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 27, name: 'Morango', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-morango-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 28, name: 'Pêssego', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-pessego-2.png', quantityType: 'Pacote 1 Kg' },
-        { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'http://sabordubom.com.br/media/k2/items/cache/6f43b5263fbba79c5962514b85d34738_M.jpg', quantityType: 'Balde 4 Kg' },
+        { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'http://sabordubom.com.br/media/k2/items/cache/6f43b5263fbba79c5962514b85d34738_XL.jpg', quantityType: 'Balde 4 Kg' },
         { id: 31, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 27.00,image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tangerina-2.png', quantityType: 'Pacote 1Kg'},
         { id: 33, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png', quantityType: 'Pacote 1 Kg' },
