@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDeliveryFee(this.value);
     });
 
-    document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
         const fullName = document.getElementById('fullName').value;
@@ -70,10 +70,35 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const total = parseFloat(orderTotal.textContent);
         if (total <= 0) {
-            alert("Seu pedido está vazio, adicione um produto para finalizar a compra."); // Adicionado
+            alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
             return;
         }
 
+        const orderData = {
+            orderNumber: Date.now(), // Ou outro identificador único
+            customerName: fullName,
+            deliveryDate: new Date(deliveryDate),
+            items: cart.map(item => `${item.quantity} x ${item.name}`),
+            address: `${address}, ${number}, ${complement}, ${city}`,
+            status: 'Pendente',
+            payment: `${payment}`,
+            total: `${total}`
+        };
+
+        // Enviar pedido para o MongoDB
+        try {
+            await fetch('http://localhost:5000/api/orders', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderData)
+            });
+        } catch (error) {
+            console.error('Erro ao salvar pedido no banco de dados:', error);
+        }
+
+        // Enviar pedido para o WhatsApp
         const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
         const deliveryFee = city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba' ? 7 : 'Consultar via WhatsApp';
         const finalTotal = typeof deliveryFee === 'number' ? total + deliveryFee : total;
