@@ -32,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 31, name: 'Tamarindo', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tamarindo-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 27.00,image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-tangerina-2.png', quantityType: 'Pacote 1Kg'},
         { id: 33, name: 'Umbu', price: 27.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-umbu-2.png', quantityType: 'Pacote 1 Kg' },
-        { id: 34, name: 'Uva', price: 31.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png', quantityType: 'Pacote 1 Kg' },
+        { id: 34, name: 'Uva', price: 32.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/polpa-fruta-cong-uva-2.png', quantityType: 'Pacote 1 Kg' },
         { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg' },
         { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' },
         { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' },
