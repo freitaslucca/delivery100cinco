@@ -27,15 +27,26 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('phone').addEventListener('input', function (e) {
             let phone = e.target.value;
     
-            // Remove todos os caracteres que não são números
             phone = phone.replace(/\D/g, '');
     
-            // Adiciona os parênteses e o traço no lugar correto
             phone = phone.replace(/^(\d{2})(\d)/, '($1) $2'); // (XX) X...
             phone = phone.replace(/(\d{5})(\d)/, '$1-$2'); // (XX) XXXXX-XXXX
     
-            // Atualiza o valor do input com o formato correto
             e.target.value = phone;
+        });
+        // Adiciona máscara de cep ao input de cep
+
+        document.getElementById('cep').addEventListener('input', function (e) {
+            let cep = e.target.value;
+        
+            // Remove todos os caracteres que não são números
+            cep = cep.replace(/\D/g, '');
+        
+            // Formata no padrão xxxxx-xxx
+            cep = cep.replace(/^(\d{5})(\d)/, '$1-$2');
+        
+            // Atualiza o valor do input com o formato correto
+            e.target.value = cep;
         });
 
     // Funções de controle de quantidade e remoção do carrinho
