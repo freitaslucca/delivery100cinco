@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="icon" href="assets/favicon.png" type="image/png">
 </head>
+
 <body>
     <header>
         <h1>Finalizar Pedido</h1>
@@ -36,7 +38,8 @@
             </div>
             <div class="form-group">
                 <label for="number">Número:</label>
-                <input type="text" id="number" name="number" required placeholder="Digite o número da sua residência...">
+                <input type="text" id="number" name="number" required
+                    placeholder="Digite o número da sua residência...">
             </div>
             <div class="form-group">
                 <label for="complement">Complemento:</label>
@@ -52,7 +55,7 @@
             </div>
             <div class="form-group">
                 <label for="phone">Telefone para contato:</label>
-                <input type="text" id="phone" name="phone" required placeholder="(xx) x xxxx-xxxx">
+                <input type="text" id="phone" name="phone" placeholder="(XX) XXXXX-XXXX" maxlength="15">
             </div>
             <div class="form-group">
                 <label for="payment">Forma de Pagamento:</label>
@@ -67,4 +70,5 @@
     </main>
     <script src="src/checkout.js"></script>
 </body>
+
 </html>

@@ -23,6 +23,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         orderTotal.textContent = total.toFixed(2);
     }
+        // Adiciona máscara de telefone ao input de telefone
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let phone = e.target.value;
+    
+            // Remove todos os caracteres que não são números
+            phone = phone.replace(/\D/g, '');
+    
+            // Adiciona os parênteses e o traço no lugar correto
+            phone = phone.replace(/^(\d{2})(\d)/, '($1) $2'); // (XX) X...
+            phone = phone.replace(/(\d{5})(\d)/, '$1-$2'); // (XX) XXXXX-XXXX
+    
+            // Atualiza o valor do input com o formato correto
+            e.target.value = phone;
+        });
 
     // Funções de controle de quantidade e remoção do carrinho
     window.removeItem = function(index) {
@@ -138,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     
             if (telegramResponse.ok) {
-                alert("Pedido enviado com sucesso!");
+                console.log("Pedido enviado com sucesso!");
             } else {
                 console.error('Erro ao enviar pedido para o Telegram:', await telegramResponse.json());
             }
