@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedido Efetuado com Sucesso</title>
+    <link rel="stylesheet" href="styles/sucesso.css">
+    <link rel="icon" href="assets/favicon.png" type="image/png">
+</head>
+
+<body>
+    <div class="success-container">
+        <div class="success-content">
+            <img src="assets/svg/ok.svg" alt="Sucesso" class="success-icon">
+            <h1 class="success-title">Pedido efetuado com sucesso!</h1>
+            <p class="success-message">Obrigado por escolher nossos produtos! Em breve entraremos em contato para confirmar sua entrega.</p>
+            <div class="success-buttons">
+                <a href="index.html" class="button continue-button">Continuar Comprando</a>
+                <button class="button contact-button" onclick="contactSupport()">Fale Conosco</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        function contactSupport() {
+            window.location.href = "https://wa.me/5547992501005?text=Ol%C3%A1%2C%20realizei%20um%20pedido%20no%20site%20e%20gostaria%20de%20tirar%20algumas%20d%C3%BAvidas."; 
+        }
+    </script>
+</body>
+
+</html>

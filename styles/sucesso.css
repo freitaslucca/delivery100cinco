@@ -1,0 +1,143 @@
+/* Estilo Base */
+body {
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #213970, #3f5fa9);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px; /* Evita encostar nas bordas em telas menores */
+}
+
+.success-container {
+    text-align: center;
+    background: #ffffff;
+    color: #333;
+    border-radius: 10px;
+    padding: 40px 30px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    animation: fadeIn 1s ease-in-out;
+}
+
+.success-icon {
+    width: 120px;
+    margin-bottom: 20px;
+    animation: pop 0.6s ease-out;
+}
+
+.success-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    font-size: 16px;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    color: #666;
+}
+
+.success-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.button {
+    display: inline-block;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.continue-button {
+    background-color: #213970;
+    color: #ffffff;
+    border: none;
+}
+
+.continue-button:hover {
+    background-color: #5674ba;
+}
+
+.contact-button {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 2px solid #213970;
+}
+
+.contact-button:hover {
+    background-color: #213970;
+    color: #ffffff;
+}
+
+/* Animações */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes pop {
+    from {
+        transform: scale(0.8);
+    }
+    to {
+        transform: scale(1);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .success-container {
+        padding: 30px 20px;
+    }
+
+    .success-title {
+        font-size: 20px;
+    }
+
+    .success-message {
+        font-size: 14px;
+    }
+
+    .button {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .success-container {
+        padding: 20px 15px;
+        max-width: 95%;
+    }
+
+    .success-title {
+        font-size: 18px;
+    }
+
+    .success-message {
+        font-size: 12px;
+    }
+
+    .button {
+        font-size: 12px;
+        padding: 8px 10px;
+    }
+}
