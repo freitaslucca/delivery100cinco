@@ -1,11 +1,12 @@
 document.addEventListener('DOMContentLoaded', function() {
+    let total = 0;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const orderItems = document.getElementById('orderItems');
     const orderTotal = document.getElementById('orderTotal');
     const deliveryFeeMessage = document.getElementById('deliveryFeeMessage');
 
+    // Função para renderizar o resumo do pedido
     function renderOrderSummary() {
-        let total = 0;
         orderItems.innerHTML = '';
         cart.forEach((item, index) => {
             const orderItem = document.createElement('li');
@@ -23,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function() {
         orderTotal.textContent = total.toFixed(2);
     }
 
+    // Funções de controle de quantidade e remoção do carrinho
     window.removeItem = function(index) {
         cart.splice(index, 1);
         localStorage.setItem('cart', JSON.stringify(cart));
@@ -43,6 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     };
 
+    // Função para atualizar a taxa de entrega
     function updateDeliveryFee(city) {
         if (city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba') {
             deliveryFeeMessage.textContent = 'Investimento de entrega: R$ 7,00.';
@@ -51,13 +54,48 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Atualiza a taxa de entrega com base na cidade digitada
     document.getElementById('city').addEventListener('input', function() {
         updateDeliveryFee(this.value);
     });
 
+    // DESATIVADA TEMPORARIAMENTE!!!!!
+    //  Função para renderizar os pedidos no dashboard 
+    // async function renderPedidos() {
+    //     try {
+    //         const response = await fetch('/api/orders');
+    //         const pedidos = await response.json();
+    //         const pedidosList = document.getElementById('pedidosList');
+    //         pedidosList.innerHTML = '';  // Limpa o conteúdo anterior
+    
+    //         pedidos.forEach(pedido => {
+    //             // Verifica se "pedido.total" existe antes de usar o "toFixed()"
+    //             const total = pedido.total ? pedido.total.toFixed(2) : '0.00';
+    //             const listItem = document.createElement('li');
+    //             listItem.textContent = `Pedido #${pedido.orderNumber} - Cliente: ${pedido.customerName} - Total: R$ ${total}`;
+    //             pedidosList.appendChild(listItem);
+    //         });
+    //     } catch (error) {
+    //         console.error('Erro ao buscar pedidos:', error);
+    //     }
+    // }
+
+
+    //Redireciona para página com mensagem de sucesso
+    function redirectToSuccessPage() {
+        console.log("Valor de total:", total); // Debug: Verificar o valor de total
+        // Redireciona o usuário para a página de sucesso
+        if (total > 0) {
+            window.location.href = "/pedido-sucesso.html"; // Altere para o caminho da sua página
+        }else{
+            alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
+            return;
+        }
+    }
+    
     document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
         e.preventDefault();
-
+    
         const fullName = document.getElementById('fullName').value;
         const cep = document.getElementById('cep').value;
         const address = document.getElementById('address').value;
@@ -67,52 +105,53 @@ document.addEventListener('DOMContentLoaded', function() {
         const deliveryDate = document.getElementById('deliveryDate').value;
         const phone = document.getElementById('phone').value;
         const payment = document.getElementById('payment').value;
-
+    
         const total = parseFloat(orderTotal.textContent);
         if (total <= 0) {
             alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
             return;
         }
-
-        const orderData = {
-            orderNumber: Date.now(), // Ou outro identificador único
-            customerName: fullName,
-            deliveryDate: new Date(deliveryDate),
-            items: cart.map(item => `${item.quantity} x ${item.name}`),
-            address: `${address}, ${number}, ${complement}, ${city}`,
-            status: 'Pendente',
-            payment: `${payment}`,
-            total: `${total}`
-        };
-
-        // Enviar pedido para o MongoDB
+    
+        const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${(item.quantity * item.price).toFixed(2)}`).join('\n');
+        const deliveryFee = city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba' ? 7 : 'Consultar via WhatsApp';
+        const finalTotal = typeof deliveryFee === 'number' ? total + deliveryFee : total;
+        const deliveryFeeText = typeof deliveryFee === 'number' ? `Investimento de entrega: R$ ${deliveryFee.toFixed(2)}` : deliveryFee;
+    
+        const fullOrderSummary = `*Novo pedido!*\n*Nome:* ${fullName}\n*CEP:* ${cep}\n*Endereço:* ${address}, Número: ${number}\n*Complemento:* ${complement}\n*Cidade:* ${city}\n*Telefone:* [${phone}](https://wa.me/${phone.replace(/[^0-9]/g, '')})\n\n*Pedido:*\n${orderSummary}\n\n*Forma de Pagamento:* ${payment}\n${deliveryFeeText}\n*Total Final:* R$ ${finalTotal.toFixed(2)}`;
+    
+        // Enviar pedido para o Telegram
+        const telegramBotToken = '7771133074:AAHRznRkXHjBBdpfh6nrQbLymu6WwdzqrKg';
+        const telegramChatId = '-1002415622182';
+        const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+    
         try {
-            await fetch('http://localhost:5000/api/orders', {
+            const telegramResponse = await fetch(telegramUrl, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(orderData)
+                body: JSON.stringify({
+                    chat_id: telegramChatId,
+                    text: fullOrderSummary,
+                    parse_mode: 'Markdown'
+                })
             });
+    
+            if (telegramResponse.ok) {
+                alert("Pedido enviado com sucesso!");
+            } else {
+                console.error('Erro ao enviar pedido para o Telegram:', await telegramResponse.json());
+            }
         } catch (error) {
-            console.error('Erro ao salvar pedido no banco de dados:', error);
+            console.error('Erro ao enviar pedido para o Telegram:', error);
         }
-
-        // Enviar pedido para o WhatsApp
-        const orderSummary = cart.map(item => `${item.quantity} x ${item.name} - R$ ${item.price.toFixed(2)}`).join('\n');
-        const deliveryFee = city.toLowerCase() === 'brusque' || city.toLowerCase() === 'guabiruba' ? 7 : 'Consultar via WhatsApp';
-        const finalTotal = typeof deliveryFee === 'number' ? total + deliveryFee : total;
-        const deliveryFeeText = typeof deliveryFee === 'number' ? `Investimento de entrega: R$ ${deliveryFee.toFixed(2)}` : deliveryFee;
-
-        const fullOrderSummary = `*Novo pedido!*\n*Nome:* ${fullName}\n*CEP:* ${cep}\n*Endereço:* ${address}, Número: ${number}\n*Complemento:* ${complement}\n*Cidade:* ${city}\n*Telefone:* ${phone}\n\n*Pedido:*\n${orderSummary}\n\n*Forma de Pagamento:* ${payment}\n${deliveryFeeText}\n*Total Final:* R$ ${finalTotal.toFixed(2)}`;
-
-        const whatsappUrl = `https://wa.me/+554792501005?text=${encodeURIComponent(fullOrderSummary)}`;
-        window.location.href = whatsappUrl;
-
+    
         // Esvaziar o carrinho após confirmar o pedido
         localStorage.removeItem('cart');
+        renderOrderSummary();
+        redirectToSuccessPage();
     });
-
+    // Buscar endereço pelo CEP
     document.getElementById('cep').addEventListener('blur', function() {
         const cep = this.value;
         if (cep.length === 8) {
@@ -129,5 +168,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+
+    // Renderizar o resumo do pedido
     renderOrderSummary();
+    // renderPedidos();  // Renderizar os pedidos na inicialização da página
+    console.log("Total fora: ", total)
 });
+
+
