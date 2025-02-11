@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 9, name: 'Caju', price: 27.00, image: 'assets/polpas/caju.png', quantityType: '10 unid. 100g' },
         { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.png', quantityType: '10 unid. 100g' },
         { id: 11, name: 'Cupuaçu', price: 32.00, image: 'assets/polpas/cucuacu.png', quantityType: '10 unid. 100g' },
-        { id: 12, name: 'Mix Beta', price: 36.00, image: 'assets/polpas/mixbeta.png', quantityType: '10 unid. 100g' },
+        { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.png', quantityType: '10 unid. 100g' },
         { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.png', quantityType: '10 unid. 100g' },
         { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.png', quantityType: '10 unid. 100g' },
         { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.png', quantityType: 'Pacote 1Kg' },
