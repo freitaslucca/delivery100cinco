@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg' },
         { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' },
         { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' },
-        { id: 38, name: 'Morango Congelado', price: 28.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
+        { id: 38, name: 'Morango Congelado', price: 29.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
         { id: 40, name: 'Framboesa Congelada<br>(Sob Encomenda)', price: 78.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-framboesa-2.png', quantityType: 'Pacote 1,02 Kg' }
     ];
 
