@@ -46,13 +46,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
     renderOrderSummary();
 
-    // Exemplo de função de redirecionamento ao confirmar pedido
     window.redirectToSuccessPage = function () {
-        alert("Pedido confirmado! Obrigado.");
-        // Exemplo: Limpa carrinho e redireciona
-        localStorage.removeItem('cart');
-        window.location.href = 'index.html';
-    }
+        // Obtem o total (certifique-se que o valor esteja atualizado no #orderTotal)
+        const total = parseFloat(document.getElementById('orderTotal').textContent);
+        if (total > 0) {
+          // Remove o carrinho e redireciona
+          localStorage.removeItem('cart');
+          window.location.href = 'pedido-sucesso.html';
+        } else {
+          alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
+        }
+      };
     // Carregar dados do cliente do localStorage ao carregar a página
     function loadCustomerData() {
         const customerData = JSON.parse(localStorage.getItem('customerData'));
