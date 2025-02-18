@@ -12,7 +12,64 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.png', quantityType: '10 unid. 100g' },
         { id: 11, name: 'Cupuaçu', price: 32.00, image: 'assets/polpas/cucuacu.png', quantityType: '10 unid. 100g' },
         { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.png', quantityType: '10 unid. 100g' },
-        { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.png', quantityType: '10 unid. 100g' },
+        { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.png', quantityType: '10 unid. 100g', description: `
+      <p>
+        Polpa Mista de Uva, Morango, Maçã, Açaí, Beterraba e Gengibre. Ingredientes vindos das frutas e vegetais, na combinação perfeita para o equilíbrio do organismo.
+        <br><strong>MINERAIS:</strong> Ácido Fólico | Cálcio | Cobre | Ferro | Fósforo | Magnésio | Manganês | Potássio | Selênio | Sódio | Zinco.
+        <br><strong>VITAMINAS:</strong> A | B1 | B2 | B5 | B6 | C | D | E | K.
+      </p>
+      <h3>Embalagem Disponível:</h3>
+      <p>Pacotes com 10 unidades de 100g (cx. 10kg)</p>
+      <h3>Polpa Mix nº 2</h3>
+      <p>Informação Nutricional: Porção de 100g:</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Quantidade por porção</th>
+            <th>%VD *</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Valor Energético: 53kcal = 223kJ</td>
+            <td>3</td>
+          </tr>
+          <tr>
+            <td>Carboidratos (g): 11</td>
+            <td>4</td>
+          </tr>
+          <tr>
+            <td>Proteínas (g): 0,8</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Gorduras Totais (g): 0,6</td>
+            <td>1</td>
+          </tr>
+          <tr>
+            <td>Gorduras Saturadas (g): 0</td>
+            <td>0</td>
+          </tr>
+          <tr>
+            <td>Gorduras Trans (g): 0</td>
+            <td>**</td>
+          </tr>
+          <tr>
+            <td>Fibra Alimentar (g): 1,4</td>
+            <td>6</td>
+          </tr>
+          <tr>
+            <td>Sódio (mg): 7</td>
+            <td>0</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        Dados nutricionais obtidos através de literatura, conforme previsto na RDC n°360/2003.
+        *%Valores diários com base em uma dieta de 2.000 kcal ou 8.400 kJ. Seus valores diários podem ser maiores ou menores dependendo de suas necessidades energéticas.
+        **VD não estabelecido.
+      </p>
+    ` },
         { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.png', quantityType: '10 unid. 100g' },
         { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.png', quantityType: 'Pacote 1Kg' },
         { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.png', quantityType: '10 unid. 100g' },
@@ -63,9 +120,55 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p class="kilo">(${product.quantityType})</p>
                 <button onclick="addToCart(${product.id})">adicionar ao carrinho</button>
             `;
+            // Adiciona o evento de clique na imagem para abrir o modal
+            const productImage = productDiv.querySelector('img');
+            productImage.style.cursor = 'pointer';
+            productImage.addEventListener('click', function() {
+                openProductModal(product.id);
+            });
             productList.appendChild(productDiv);
         });
     }
+    
+    // Função para abrir o modal de detalhes do produto
+    function openProductModal(productId) {
+        const product = products.find(p => p.id === productId);
+        if (product) {
+            document.getElementById('modalProductImage').src = product.image;
+            document.getElementById('modalProductImage').alt = product.name;
+            document.getElementById('modalProductName').innerHTML = product.name;
+            document.getElementById('modalProductPrice').textContent = `R$ ${product.price.toFixed(2)}`;
+            document.getElementById('modalProductQuantity').textContent = product.quantityType;
+            
+            // Insere a descrição do produto
+            const descriptionContainer = document.getElementById('modalProductDescription');
+            descriptionContainer.innerHTML = product.description || '';
+    
+            // Configura o botão "Adicionar ao Carrinho" do modal
+            const modalAddToCart = document.getElementById('modalAddToCart');
+            modalAddToCart.onclick = function() {
+                addToCart(product.id);
+                closeProductModal();
+            };
+    
+            document.getElementById('productModal').style.display = 'flex';
+        }
+    }
+    // Função para fechar o modal
+    function closeProductModal() {
+        document.getElementById('productModal').style.display = 'none';
+    }
+
+    // Evento para fechar o modal ao clicar no "X"
+    document.getElementById('closeProductModal').addEventListener('click', closeProductModal);
+
+    // (Opcional) Fecha o modal se o usuário clicar fora do conteúdo do modal
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('productModal');
+        if (event.target === modal) {
+            closeProductModal();
+        }
+    });
 
     function debounce(func, wait) {
         let timeout;
@@ -105,25 +208,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function renderCart() {
         cartItems.innerHTML = '';
+      
         if (cart.length === 0) {
-            emptyCartMessage.style.display = 'block';
+          // Exibe a mensagem de carrinho vazio
+          cartItems.innerHTML = '<p id="emptyCartMessage">Seu carrinho está vazio.</p>';
         } else {
-            emptyCartMessage.style.display = 'none';
-            cart.forEach((item, index) => {
-                const cartItemDiv = document.createElement('div');
-                cartItemDiv.classList.add('cart-item');
-                cartItemDiv.innerHTML = `
-                    <span>${item.name} - ${item.quantity} x R$ ${item.price.toFixed(2)}</span>
-                    <div class="cart-item-controls">
-                        <button onclick="increaseQuantity(${index})">+</button>
-                        <button onclick="decreaseQuantity(${index})">-</button>
-                        <button onclick="removeItem(${index})"><span class="icon-trash">🗑️</span></button>
-                    </div>
-                `;
-                cartItems.appendChild(cartItemDiv);
-            });
+          cart.forEach((item, index) => {
+            const cartItemDiv = document.createElement('div');
+            cartItemDiv.classList.add('cart-item');
+            
+            // Exemplo com imagem do produto
+            cartItemDiv.innerHTML = `
+              <img src="${item.image}" alt="${item.name}" class="cart-item-img">
+              <div class="cart-item-details">
+                <h3>${item.name}</h3>
+                <p>R$ ${item.price.toFixed(2)}</p>
+              </div>
+              <div class="cart-item-quantity">
+                <button onclick="increaseQuantity(${index})">+</button>
+                <span>${item.quantity}</span>
+                <button onclick="decreaseQuantity(${index})">-</button>
+              </div>
+              <button class="remove-item" onclick="removeItem(${index})">🗑️</button>
+            `;
+      
+            cartItems.appendChild(cartItemDiv);
+          });
         }
-    }
+      
+        // Calcula o total
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        document.getElementById('cartTotal').textContent = `Total: R$ ${total.toFixed(2)}`;
+      }
 
     window.increaseQuantity = function(index) {
         cart[index].quantity++;
@@ -157,10 +273,15 @@ document.addEventListener('DOMContentLoaded', function() {
         cartModal.style.display = 'flex';
     });
 
-    document.getElementById('closeCart').addEventListener('click', function() {
-        cartModal.style.display = 'none';
+    // document.getElementById('closeCart').addEventListener('click', function() {
+    //     cartModal.style.display = 'none';
+    // });
+    cartModal.addEventListener('click', function(event) {
+        if (event.target === cartModal) {
+            cartModal.style.display = 'none';
+        }
     });
-
+    
     document.getElementById('checkoutButton').addEventListener('click', function() {
         if (cart.length === 0) {
             alert("Seu carrinho está vazio. Adicione produtos antes de finalizar o pedido."); // Adicionado

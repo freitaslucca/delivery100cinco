@@ -8,20 +8,50 @@ document.addEventListener('DOMContentLoaded', function () {
     // Função para renderizar o resumo do pedido
     function renderOrderSummary() {
         orderItems.innerHTML = '';
-        cart.forEach((item, index) => {
-            const orderItem = document.createElement('li');
-            orderItem.innerHTML = `
-                <span>${item.quantity} x ${item.name} - R$ ${(item.quantity * item.price).toFixed(2)}</span>
-                <div class="order-item-controls">
-                    <button onclick="removeItem(${index})"><span class="icon-trash">🗑️</span></button>
-                    <button class="quantity-control" onclick="increaseQuantity(${index})">+</button>
-                    <button class="quantity-control" onclick="decreaseQuantity(${index})">-</button>
-                </div>
-            `;
-            orderItems.appendChild(orderItem);
-            total += item.quantity * item.price;
+
+        if (cart.length === 0) {
+            orderItems.innerHTML = '<li><p style="text-align:center;">Seu carrinho está vazio.</p></li>';
+            orderTotal.textContent = '0.00';
+            return;
+        }
+
+        let totalPrice = 0;
+
+        cart.forEach(item => {
+            // Calcula subtotal do item
+            const itemSubtotal = item.price * item.quantity;
+            totalPrice += itemSubtotal;
+
+            // Cria o <li> para exibir a imagem, nome, preço, quantidade etc.
+            const li = document.createElement('li');
+            li.innerHTML = `
+            <img src="${item.image}" alt="${item.name}">
+            <div>
+              <h3>${item.name}</h3>
+              <p>R$ ${item.price.toFixed(2)}</p>
+            </div>
+            <div>
+              <p>Qtde: ${item.quantity}</p>
+            </div>
+            <div>
+              <p>R$ ${(itemSubtotal).toFixed(2)}</p>
+            </div>
+          `;
+            orderItems.appendChild(li);
         });
-        orderTotal.textContent = total.toFixed(2);
+
+        // Exibe o total no rodapé
+        orderTotal.textContent = totalPrice.toFixed(2);
+    }
+
+    renderOrderSummary();
+
+    // Exemplo de função de redirecionamento ao confirmar pedido
+    window.redirectToSuccessPage = function () {
+        alert("Pedido confirmado! Obrigado.");
+        // Exemplo: Limpa carrinho e redireciona
+        localStorage.removeItem('cart');
+        window.location.href = 'index.html';
     }
     // Carregar dados do cliente do localStorage ao carregar a página
     function loadCustomerData() {
@@ -150,7 +180,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const payment = document.getElementById('payment').value;
 
         // Formatar a data de entrega para o padrão BR
-        const formattedDeliveryDate = deliveryDate.split('-').reverse().join('/'); 
+        const formattedDeliveryDate = deliveryDate.split('-').reverse().join('/');
         const total = parseFloat(orderTotal.textContent);
         if (total <= 0) {
             alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
