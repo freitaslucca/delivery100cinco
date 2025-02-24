@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', function () {
-    let total = 0;
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
     const orderItems = document.getElementById('orderItems');
     const orderTotal = document.getElementById('orderTotal');
@@ -18,46 +17,43 @@ document.addEventListener('DOMContentLoaded', function () {
         let totalPrice = 0;
 
         cart.forEach(item => {
-            // Calcula subtotal do item
             const itemSubtotal = item.price * item.quantity;
             totalPrice += itemSubtotal;
 
-            // Cria o <li> para exibir a imagem, nome, preço, quantidade etc.
             const li = document.createElement('li');
             li.innerHTML = `
-            <img src="${item.image}" alt="${item.name}">
-            <div>
-              <h3>${item.name}</h3>
-              <p>R$ ${item.price.toFixed(2)}</p>
-            </div>
-            <div>
-              <p>Qtde: ${item.quantity}</p>
-            </div>
-            <div>
-              <p>R$ ${(itemSubtotal).toFixed(2)}</p>
-            </div>
-          `;
+                <img src="${item.image}" alt="${item.name}">
+                <div>
+                  <h3>${item.name}</h3>
+                  <p>R$ ${item.price.toFixed(2)}</p>
+                </div>
+                <div>
+                  <p>Qtde: ${item.quantity}</p>
+                </div>
+                <div>
+                  <p>R$ ${itemSubtotal.toFixed(2)}</p>
+                </div>
+            `;
             orderItems.appendChild(li);
         });
 
-        // Exibe o total no rodapé
         orderTotal.textContent = totalPrice.toFixed(2);
     }
 
     renderOrderSummary();
 
-    window.redirectToSuccessPage = function () {
-        // Obtem o total (certifique-se que o valor esteja atualizado no #orderTotal)
+    // Função para redirecionar para a página de sucesso
+    function redirectToSuccessPage() {
         const total = parseFloat(document.getElementById('orderTotal').textContent);
         if (total > 0) {
-          // Remove o carrinho e redireciona
-          localStorage.removeItem('cart');
-          window.location.href = 'pedido-sucesso.html';
+            localStorage.removeItem('cart');
+            window.location.href = 'pedido-sucesso.html';
         } else {
-          alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
+            alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
         }
-      };
-    // Carregar dados do cliente do localStorage ao carregar a página
+    }
+
+    // Carregar dados do cliente do localStorage
     function loadCustomerData() {
         const customerData = JSON.parse(localStorage.getItem('customerData'));
         if (customerData) {
@@ -70,6 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             document.getElementById('phone').value = customerData.phone || '';
         }
     }
+    loadCustomerData();
 
     // Salvar dados do cliente no localStorage
     function saveCustomerData() {
@@ -85,20 +82,14 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('customerData', JSON.stringify(customerData));
     }
 
-
-    // Adiciona máscara de telefone ao input de telefone
+    // Adiciona máscara de telefone ao input
     document.getElementById('phone').addEventListener('input', function (e) {
         let phone = e.target.value;
-
         phone = phone.replace(/\D/g, '');
-
-        phone = phone.replace(/^(\d{2})(\d)/, '($1) $2'); // (XX) X...
-        phone = phone.replace(/(\d{5})(\d)/, '$1-$2'); // (XX) XXXXX-XXXX
-
+        phone = phone.replace(/^(\d{2})(\d)/, '($1) $2');
+        phone = phone.replace(/(\d{5})(\d)/, '$1-$2');
         e.target.value = phone;
     });
-    loadCustomerData();
-
 
     // Funções de controle de quantidade e remoção do carrinho
     window.removeItem = function (index) {
@@ -129,49 +120,14 @@ document.addEventListener('DOMContentLoaded', function () {
             deliveryFeeMessage.textContent = 'Para outras regiões, consulte o valor da taxa de entrega via WhatsApp.';
         }
     }
-
-    // Atualiza a taxa de entrega com base na cidade digitada
     document.getElementById('city').addEventListener('input', function () {
         updateDeliveryFee(this.value);
     });
 
-    // DESATIVADA TEMPORARIAMENTE!!!!!
-    //  Função para renderizar os pedidos no dashboard 
-    // async function renderPedidos() {
-    //     try {
-    //         const response = await fetch('/api/orders');
-    //         const pedidos = await response.json();
-    //         const pedidosList = document.getElementById('pedidosList');
-    //         pedidosList.innerHTML = '';  // Limpa o conteúdo anterior
-
-    //         pedidos.forEach(pedido => {
-    //             // Verifica se "pedido.total" existe antes de usar o "toFixed()"
-    //             const total = pedido.total ? pedido.total.toFixed(2) : '0.00';
-    //             const listItem = document.createElement('li');
-    //             listItem.textContent = `Pedido #${pedido.orderNumber} - Cliente: ${pedido.customerName} - Total: R$ ${total}`;
-    //             pedidosList.appendChild(listItem);
-    //         });
-    //     } catch (error) {
-    //         console.error('Erro ao buscar pedidos:', error);
-    //     }
-    // }
-
-
-    //Redireciona para página com mensagem de sucesso
-    function redirectToSuccessPage() {
-        console.log("Valor de total:", total); // Debug: Verificar o valor de total
-        // Redireciona o usuário para a página de sucesso
-        if (total > 0) {
-            window.location.href = "/pedido-sucesso.html"; // Altere para o caminho da sua página
-        } else {
-            alert("Seu pedido está vazio, adicione um produto para finalizar a compra.");
-            return;
-        }
-    }
-
+    // Envio do pedido para o Telegram ao submeter o formulário
     document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
         e.preventDefault();
-        saveCustomerData(); // Salvar os dados do cliente no localStorage
+        saveCustomerData();
 
         const fullName = document.getElementById('fullName').value;
         const cep = document.getElementById('cep').value;
@@ -198,7 +154,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const fullOrderSummary = `*Novo pedido!*\n*Nome:* ${fullName}\n*CEP:* ${cep}\n*Data de entrega:* ${formattedDeliveryDate}\n*Endereço:* ${address}, Número: ${number}\n*Complemento:* ${complement}\n*Cidade:* ${city}\n*Telefone:* [${phone}](https://wa.me/${phone.replace(/[^0-9]/g, '')})\n\n*Pedido:*\n${orderSummary}\n\n*Forma de Pagamento:* ${payment}\n${deliveryFeeText}\n*Total Final:* R$ ${finalTotal.toFixed(2)}`;
 
-        // Enviar pedido para o Telegram
         const telegramBotToken = '7771133074:AAHRznRkXHjBBdpfh6nrQbLymu6WwdzqrKg';
         const telegramChatId = '-1002415622182';
         const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
@@ -225,11 +180,12 @@ document.addEventListener('DOMContentLoaded', function () {
             console.error('Erro ao enviar pedido para o Telegram:', error);
         }
 
-        // Esvaziar o carrinho após confirmar o pedido
+        // Limpa o carrinho, atualiza o resumo e redireciona para a página de sucesso
         localStorage.removeItem('cart');
         renderOrderSummary();
         redirectToSuccessPage();
     });
+
     // Buscar endereço pelo CEP
     document.getElementById('cep').addEventListener('blur', function () {
         const cep = this.value;
@@ -247,9 +203,5 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-
-    // Renderizar o resumo do pedido
     renderOrderSummary();
-    // renderPedidos();  // Renderizar os pedidos na inicialização da página
-    console.log("Total fora: ", total)
 });
