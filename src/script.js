@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.png', quantityType: '10 unid. 100g' },
         { id: 9, name: 'Caju', price: 27.00, image: 'assets/polpas/caju.png', quantityType: '10 unid. 100g' },
         { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.png', quantityType: '10 unid. 100g' },
-        { id: 11, name: 'Cupuaçu <br>(Sob Encomenda)', price: 32.00, image: 'assets/polpas/cucuacu.png', quantityType: '10 unid. 100g' },
+        { id: 11, name: 'Cupuaçu <br>(indisponível)', price: 32.00, image: 'assets/polpas/cucuacu.png', quantityType: '10 unid. 100g' },
         { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.png', quantityType: '10 unid. 100g' },
         { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.png', quantityType: '10 unid. 100g', description: `
       <p>
