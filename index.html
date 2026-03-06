@@ -1,75 +1,691 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br" class="scroll-smooth">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
-  <title>100 Cinco</title>
-  <link rel="stylesheet" href="styles/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <link rel="icon" href="assets/favicon.png" type="image/png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pedidos | 100 Cinco Distribuidora</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-family='system-ui, sans-serif' font-size='46' font-weight='900' fill='%23fff' text-anchor='middle'%3E105%3C/text%3E%3C/svg%3E" type="image/svg+xml">    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#F8FAF9',
+                            dark: '#0A2517',
+                            text: '#4B5563',
+                            green: '#10B981',
+                            mango: '#F59E0B',
+                            berry: '#E11D48',
+                            acai: '#4C1D95'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(10, 37, 23, 0.08)',
+                        'float': '0 30px 50px -20px rgba(10, 37, 23, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { 
+            background-color: #F8FAF9; 
+            color: #4B5563; 
+            overflow-x: hidden;
+            padding-bottom: 100px;
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F8FAF9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+        
+        .glass-header {
+            background: rgba(248, 250, 249, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        .blob {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            opacity: 0.3;
+            animation: pulse-blob 10s infinite alternate ease-in-out;
+            pointer-events: none;
+        }
+        @keyframes pulse-blob {
+            0% { transform: scale(1) translate(0, 0); }
+            100% { transform: scale(1.1) translate(20px, -20px); }
+        }
+
+        .hidden-element { display: none !important; }
+        
+        .modal-enter { animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .modal-exit { animation: modalFadeOut 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes modalFadeOut {
+            from { opacity: 1; transform: scale(1) translateY(0); }
+            to { opacity: 0; transform: scale(0.95) translateY(10px); }
+        }
+
+        .backdrop-enter { animation: backdropIn 0.3s ease forwards; }
+        .backdrop-exit { animation: backdropOut 0.2s ease forwards; }
+        
+        @keyframes backdropIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes backdropOut { from { opacity: 1; } to { opacity: 0; } }
+
+        /* Estilização BD HTML */
+        #modalProductDescription table {
+            width: 100%;
+            margin-top: 1rem;
+            border-collapse: collapse;
+            font-size: 0.75rem;
+        }
+        #modalProductDescription th, #modalProductDescription td {
+            border: 1px solid #e5e7eb;
+            padding: 0.5rem;
+            text-align: left;
+        }
+        #modalProductDescription th { background-color: #f3f4f6; font-weight: 700; }
+        #modalProductDescription h3 { font-weight: 700; color: #0A2517; margin-top: 1rem; margin-bottom: 0.5rem; }
+    </style>
 </head>
-<body>
-  <!-- Cabeçalho -->
-  <header>
-    <div class="logo-container">
-      <img src="assets/logo.png" alt="Logo 100 Cinco" class="logo"> 
-      <h1>Pedidos 100 Cinco</h1>
+<body class="antialiased selection:bg-brand-green selection:text-white">
+
+    <!-- Blobs -->
+    <div class="blob bg-brand-mango/20 w-[400px] h-[400px] rounded-full top-0 left-[-10%] fixed"></div>
+    <div class="blob bg-brand-green/20 w-[500px] h-[500px] rounded-full bottom-[20%] right-[-10%] fixed" style="animation-delay: -5s;"></div>
+
+    <!-- Announcement Bar -->
+    <div class="fixed top-0 w-full bg-brand-green text-white text-[10px] sm:text-xs font-bold text-center py-1.5 sm:py-2 px-4 tracking-wider uppercase z-50 shadow-sm">
+        🚚 Entregas rápidas para Brusque e Guabiruba
     </div>
-    <a href="#" id="cartLink" class="cart-link">
-      <i class="fas fa-shopping-cart"></i>
-      <span id="cartCount" class="cart-count">0</span>
-    </a>
-  </header>
 
-  <!-- Barra de Pesquisa -->
-  <div class="search-container">
-    <input type="text" id="searchInput" placeholder="Pesquisar produtos...">
-    <button id="searchButton" class="search-button"><i class="fas fa-search"></i></button>
-  </div>
-
-  <!-- Conteúdo Principal -->
-  <main>
-    <div id="productList" class="product-list"></div>
-  </main>
-
-  <!-- Rodapé (Resumo do Carrinho) -->
-  <div id="cartSummary" class="cart-summary">
-    <div class="cart-summary-content">
-      <p id="cartSummaryText"></p>
-      <button id="viewCartButton" class="button-cart-footer">Ver Carrinho</button>
-    </div>
-  </div>
-
-  <!-- Modal do Carrinho -->
-  <div id="cartModal" class="cart-modal">
-    <div class="cart-content">
-      <div class="cart-header">
-        <h2>Carrinho</h2>
-      </div>
-      <div class="cart-body" id="cartItems"></div>
-      <div class="cart-footer">
-        <div class="cart-footer-total">
-          <p id="cartTotal"></p>
+    <!-- Cabeçalho Fixo -->
+    <header class="fixed top-[28px] sm:top-[32px] w-full z-40 glass-header py-3 transition-all duration-300 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-green to-emerald-700 flex items-center justify-center transform group-hover:rotate-6 transition-transform shadow-md shadow-brand-green/20">
+                    <span class="font-display font-black text-white text-lg">105</span>
+                </div>
+                <div class="flex flex-col">
+                    <span class="font-display font-black text-lg leading-none text-brand-dark tracking-tight">Pedidos</span>
+                    <span class="text-[10px] font-bold text-brand-green uppercase tracking-widest">100 Cinco</span>
+                </div>
+            </a>
+            
+            <button onclick="toggleCartModal()" class="relative p-2 text-brand-dark hover:text-brand-green transition-colors rounded-full hover:bg-brand-green/10">
+                <i data-lucide="shopping-bag" class="w-6 h-6"></i>
+                <span id="cartBadge" class="absolute top-0 right-0 w-5 h-5 bg-brand-berry text-white text-[10px] font-bold flex items-center justify-center rounded-full transform scale-0 transition-transform duration-300 border-2 border-white">0</span>
+            </button>
         </div>
-        <p id="emptyCartMessage" style="display:none;">Seu carrinho está vazio.</p>
-        <button id="checkoutButton">Finalizar Pedido</button>
-      </div>
-    </div>
-  </div>
+    </header>
 
-  <!-- Modal de detalhes do produto -->
-  <div id="productModal" class="product-modal" style="display: none;">
-    <div class="modal-content">
-      <span id="closeProductModal" class="close">&times;</span>
-      <h2 id="modalProductName"></h2>
-      <img id="modalProductImage" src="" alt="">
-      <p id="modalProductPrice"></p>
-      <p id="modalProductQuantity"></p>
-      <div id="modalProductDescription"></div>
-      <button id="modalAddToCart">Adicionar ao Carrinho</button>
-    </div>
-  </div>
+    <!-- Container do Toast Notification -->
+    <div id="toastContainer" class="fixed top-[85px] right-4 z-50 flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm"></div>
 
-  <script src="src/script.js"></script>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-36 sm:pt-40 pb-10 relative z-10">
+        
+        <div class="mb-10 text-center max-w-2xl mx-auto">
+            <h1 class="text-3xl sm:text-4xl font-display font-black text-brand-dark mb-3">Faça seu Pedido</h1>
+            <p class="text-brand-text text-sm sm:text-base mb-8">O frescor da natureza direto para o seu negócio ou casa.</p>
+            
+            <div class="relative max-w-xl mx-auto group">
+                <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                    <i data-lucide="search" class="w-5 h-5 text-gray-400 group-focus-within:text-brand-green transition-colors"></i>
+                </div>
+                <input type="text" id="searchInput" placeholder="Buscar açaí, polpas, frutas..." 
+                    class="w-full pl-12 pr-4 py-4 bg-white border border-gray-200 rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all font-medium text-brand-dark placeholder-gray-400">
+            </div>
+        </div>
+
+        <div class="flex gap-3 overflow-x-auto pb-4 mb-6 hide-scrollbar justify-start sm:justify-center">
+            <button onclick="filterProducts('Todos')" class="px-5 py-2 rounded-full bg-brand-dark text-white text-sm font-bold whitespace-nowrap shadow-md hover:bg-gray-800 transition-colors filter-btn active" data-filter="Todos">Todos</button>
+            <button onclick="filterProducts('Açaí')" class="px-5 py-2 rounded-full bg-white text-brand-text border border-gray-200 text-sm font-bold whitespace-nowrap hover:border-brand-acai hover:text-brand-acai transition-colors filter-btn" data-filter="Açaí">Açaí</button>
+            <button onclick="filterProducts('Polpas')" class="px-5 py-2 rounded-full bg-white text-brand-text border border-gray-200 text-sm font-bold whitespace-nowrap hover:border-brand-mango hover:text-brand-mango transition-colors filter-btn" data-filter="Polpas">Polpas</button>
+            <button onclick="filterProducts('Frutas')" class="px-5 py-2 rounded-full bg-white text-brand-text border border-gray-200 text-sm font-bold whitespace-nowrap hover:border-brand-berry hover:text-brand-berry transition-colors filter-btn" data-filter="Frutas">Frutas Congeladas</button>
+            <button onclick="filterProducts('Mix')" class="px-5 py-2 rounded-full bg-white text-brand-text border border-gray-200 text-sm font-bold whitespace-nowrap hover:border-brand-green hover:text-brand-green transition-colors filter-btn" data-filter="Mix">Mix</button>
+        </div>
+
+        <div id="productList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Renderizado via JS -->
+        </div>
+
+        <div id="emptySearch" class="hidden-element text-center py-16">
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i data-lucide="search-x" class="w-8 h-8 text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-display font-bold text-brand-dark">Nenhum produto encontrado</h3>
+            <p class="text-sm text-brand-text mt-1">Tente buscar por outro termo ou categoria.</p>
+        </div>
+    </main>
+
+    <!-- Rodapé Flutuante do Carrinho -->
+    <div id="cartSummaryFooter" class="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-[400px] bg-brand-dark text-white rounded-2xl p-4 shadow-float z-30 transition-all duration-500 transform translate-y-32 flex items-center justify-between cursor-pointer border border-gray-700" onclick="toggleCartModal()">
+        <div class="flex items-center gap-3">
+            <div class="w-12 h-12 bg-brand-green rounded-xl flex items-center justify-center relative shadow-inner">
+                <i data-lucide="shopping-bag" class="w-6 h-6 text-white"></i>
+                <span id="footerCartCount" class="absolute -top-2 -right-2 bg-brand-berry text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-brand-dark">0</span>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-xs text-gray-400 font-medium uppercase tracking-wider">Seu Pedido</span>
+                <span id="footerCartTotal" class="font-display font-bold text-xl leading-none text-brand-green">R$ 0,00</span>
+            </div>
+        </div>
+        <button class="px-5 py-2.5 bg-white text-brand-dark hover:bg-gray-100 text-sm font-bold rounded-xl transition-colors shadow-sm">
+            Finalizar
+        </button>
+    </div>
+
+    <!-- Modais -->
+    <div id="modalBackdrop" class="fixed inset-0 bg-brand-dark/60 backdrop-blur-sm z-50 hidden-element" onclick="closeAllModals()"></div>
+
+    <!-- Modal Produto -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden-element flex items-center justify-center p-4 pointer-events-none">
+        <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden pointer-events-auto relative flex flex-col max-h-[90vh]">
+            <button onclick="closeAllModals()" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-600 hover:text-brand-dark z-10 shadow-sm">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            
+            <div class="h-64 bg-gray-50 relative w-full flex-shrink-0 flex items-center justify-center p-4">
+                <img id="modalProductImage" src="" loading="lazy" alt="Produto" class="max-h-full max-w-full object-contain mix-blend-multiply">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none"></div>
+                <div class="absolute bottom-4 left-6">
+                    <span id="modalProductCategory" class="px-3 py-1 bg-brand-green text-white text-[10px] font-bold uppercase tracking-wider rounded-lg mb-2 inline-block shadow-sm">Categoria</span>
+                </div>
+            </div>
+            
+            <div class="p-6 flex-1 overflow-y-auto">
+                <h2 id="modalProductName" class="text-2xl font-display font-black text-brand-dark mb-1">Nome</h2>
+                <p id="modalProductUnit" class="text-sm font-semibold text-gray-500 mb-4">Unidade/Peso</p>
+                <div class="text-2xl font-bold text-brand-green mb-4" id="modalProductPrice">R$ 0,00</div>
+                <div id="modalProductDescription" class="text-sm text-brand-text leading-relaxed border-t border-gray-100 pt-4">
+                </div>
+            </div>
+            
+            <div class="p-4 border-t border-gray-100 bg-gray-50">
+                <button id="modalAddToCartBtn" class="w-full py-4 bg-brand-dark hover:bg-brand-green text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-colors shadow-md transform active:scale-95">
+                    <i data-lucide="plus" class="w-5 h-5"></i> Adicionar ao Carrinho
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Carrinho -->
+    <div id="cartModal" class="fixed inset-y-0 right-0 z-50 hidden-element flex justify-end w-full max-w-md pointer-events-none">
+        <div class="bg-white h-full w-full shadow-2xl flex flex-col pointer-events-auto">
+            
+            <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-brand-green/10 rounded-full flex items-center justify-center text-brand-green">
+                        <i data-lucide="shopping-cart" class="w-5 h-5"></i>
+                    </div>
+                    <h2 class="font-display font-bold text-xl text-brand-dark">Seu Carrinho</h2>
+                </div>
+                <button onclick="closeAllModals()" class="p-2 text-gray-400 hover:text-brand-dark hover:bg-gray-100 rounded-full transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+
+            <div id="cartItemsContainer" class="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50/50">
+            </div>
+
+            <div id="emptyCartState" class="hidden-element flex-1 flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i data-lucide="shopping-bag" class="w-10 h-10 text-gray-300"></i>
+                </div>
+                <h3 class="font-display font-bold text-lg text-brand-dark mb-1">Carrinho vazio</h3>
+                <p class="text-sm text-brand-text">Adicione produtos deliciosos ao seu pedido!</p>
+                <button onclick="closeAllModals()" class="mt-6 text-brand-green font-bold text-sm hover:underline">Continuar comprando</button>
+            </div>
+
+            <div id="cartFooterSection" class="border-t border-gray-100 p-6 bg-white z-10">
+                <div class="flex items-center justify-between mb-6">
+                    <span class="text-brand-text font-medium">Subtotal (sem entrega):</span>
+                    <span id="cartModalTotal" class="font-display font-black text-2xl text-brand-green">R$ 0,00</span>
+                </div>
+                <button onclick="goToCheckout()" class="w-full py-4 bg-brand-dark hover:bg-brand-green text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5">
+                    Ir para o Pagamento <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        lucide.createIcons();
+
+        // Produtos
+        const products = [
+            { id: 1, name: 'Abacaxi', price: 33.00, image: 'assets/polpas/abacaxi.webp', quantityType: '10 unid. 100g' },
+            { id: 2, name: 'Abacaxi com Hortelã', price: 36.00, image: 'assets/polpas/abacaxichortela.webp', quantityType: '10 unid. 100g' },
+            { id: 3, name: 'Açaí', price: 38.00, image: 'assets/polpas/acai.webp', quantityType: '10 unid. 100g', topSeller: true },
+            { id: 4, name: 'Acerola', price: 27.00, image: 'assets/polpas/acerola.webp', quantityType: '10 unid. 100g' },
+            { id: 5, name: 'Acerola com Laranja', price: 32.00, image: 'assets/polpas/acerolaelaranja.webp', quantityType: '10 unid. 100g' },
+            { id: 6, name: 'Amora', price: 44.00, image: 'assets/polpas/amora.webp', quantityType: '10 unid. 100g' },
+            { id: 7, name: 'Cacau', price: 33.00, image: 'assets/polpas/cacau.webp', quantityType: '10 unid. 100g' },
+            { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.webp', quantityType: '10 unid. 100g' },
+            { id: 9, name: 'Caju', price: 27.00, image: 'assets/polpas/caju.webp', quantityType: '10 unid. 100g' },
+            { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.webp', quantityType: '10 unid. 100g' },
+            { id: 11, name: 'Cupuaçu', price: 34.00, image: 'assets/polpas/cucuacu.webp', quantityType: '10 unid. 100g' },
+            { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.webp', quantityType: '10 unid. 100g' },
+            { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.webp', quantityType: '10 unid. 100g', topSeller: true, description: `
+              <p>Polpa Mista de Uva, Morango, Maçã, Açaí, Beterraba e Gengibre. Ingredientes vindos das frutas e vegetais, na combinação perfeita para o equilíbrio do organismo.
+              <br><strong>MINERAIS:</strong> Ácido Fólico | Cálcio | Cobre | Ferro | Fósforo | Magnésio | Manganês | Potássio | Selênio | Sódio | Zinco.
+              <br><strong>VITAMINAS:</strong> A | B1 | B2 | B5 | B6 | C | D | E | K.</p>
+              <h3>Embalagem Disponível:</h3>
+              <p>Pacotes com 10 unidades de 100g (cx. 10kg)</p>
+              <h3>Polpa Mix nº 2</h3>
+              <p>Informação Nutricional: Porção de 100g:</p>
+              <table>
+                <thead><tr><th>Quantidade por porção</th><th>%VD *</th></tr></thead>
+                <tbody>
+                  <tr><td>Valor Energético: 53kcal = 223kJ</td><td>3</td></tr>
+                  <tr><td>Carboidratos (g): 11</td><td>4</td></tr>
+                  <tr><td>Proteínas (g): 0,8</td><td>1</td></tr>
+                  <tr><td>Gorduras Totais (g): 0,6</td><td>1</td></tr>
+                  <tr><td>Gorduras Saturadas (g): 0</td><td>0</td></tr>
+                  <tr><td>Gorduras Trans (g): 0</td><td>**</td></tr>
+                  <tr><td>Fibra Alimentar (g): 1,4</td><td>6</td></tr>
+                  <tr><td>Sódio (mg): 7</td><td>0</td></tr>
+                </tbody>
+              </table>
+              <p>*%Valores diários com base em uma dieta de 2.000 kcal ou 8.400 kJ. Seus valores diários podem ser maiores ou menores dependendo de suas necessidades energéticas. **VD não estabelecido.</p>
+            ` },
+            { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.webp', quantityType: '10 unid. 100g' },
+            { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.webp', quantityType: 'Pacote 1Kg' },
+            { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.webp', quantityType: '10 unid. 100g' },
+            { id: 17, name: 'Goiaba', price: 27.00, image: 'assets/polpas/goiaba.webp', quantityType: '10 unid. 100g' },
+            { id: 18, name: 'Graviola', price: 32.00, image: 'assets/polpas/graviola.webp', quantityType: '10 unid. 100g' },
+            { id: 19, name: 'Kiwi', price: 27.00, image: 'assets/polpas/kiwi.webp', quantityType: '10 unid. 100g' },
+            { id: 20, name: 'Laranja', price: 34.00, image: 'assets/polpas/laranja.webp', quantityType: '10 unid. 100g' },
+            { id: 21, name: 'Limão', price: 27.00, image: 'assets/polpas/limao.webp', quantityType: '10 unid. 100g' },
+            { id: 22, name: 'Mamão com Laranja', price: 32.00, image: 'assets/polpas/mamaoelaranja.webp', quantityType: '10 unid. 100g' },
+            { id: 23, name: 'Manga', price: 27.00, image: 'assets/polpas/manga.webp', quantityType: '10 unid. 100g' },
+            { id: 24, name: 'Maracujá', price: 43.50, image: 'assets/polpas/maracuja.webp', quantityType: '10 unid. 100g' },
+            { id: 25, name: 'Melancia', price: 27.00, image: 'assets/polpas/melancia.webp', quantityType: '10 unid. 100g' },
+            { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'assets/polpas/bananamamaomaca.webp', quantityType: '10 unid. 100g' },
+            { id: 27, name: 'Morango', price: 29.00, image: 'assets/polpas/morango.webp', quantityType: '10 unid. 100g' },
+            { id: 28, name: 'Pêssego', price: 32.00, image: 'assets/polpas/pessego.webp', quantityType: '10 unid. 100g' },
+            { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'assets/paodequeijo.png', quantityType: 'Balde 4 Kg' },
+            { id: 31, name: 'Tamarindo', price: 27.00, image: 'assets/polpas/tamarindo.webp', quantityType: '10 unid. 100g' },
+            { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 34.00,image: 'assets/polpas/tangeirna.webp', quantityType: 'Pacote 1Kg'},
+            { id: 33, name: 'Umbu', price: 32.00, image: 'assets/polpas/umbu.webp', quantityType: '10 unid. 100g' },
+            { id: 34, name: 'Uva', price: 32.00, image: 'assets/polpas/uva.webp', quantityType: '10 unid. 100g' },
+            { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg', topSeller: true },
+            { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' },
+            { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' },
+            { id: 38, name: 'Morango Congelado', price: 29.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
+            { id: 40, name: 'Framboesa Congelada<br>(Sob Encomenda)', price: 78.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-framboesa-2.png', quantityType: 'Pacote 1,02 Kg' }
+        ];
+
+        function getCategory(name) {
+            const lower = name.toLowerCase();
+            if(lower.includes('açaí') || lower.includes('acai')) return 'Açaí';
+            if(lower.includes('congelad') || lower.includes('framboesa') || lower.includes('mirtilo')) return 'Frutas';
+            if(lower.includes('mix')) return 'Mix';
+            if(lower.includes('pão de queijo')) return 'Diversos';
+            return 'Polpas';
+        }
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let currentFilter = 'Todos';
+
+        const productListEl = document.getElementById('productList');
+        const searchInput = document.getElementById('searchInput');
+
+        function renderProducts(query = '') {
+            productListEl.innerHTML = '';
+            
+            const filtered = products.filter(product => {
+                const category = getCategory(product.name);
+                const matchesSearch = product.name.toLowerCase().includes(query.toLowerCase());
+                const matchesCategory = currentFilter === 'Todos' || category === currentFilter;
+                return matchesSearch && matchesCategory;
+            });
+
+            if (filtered.length === 0) {
+                productListEl.classList.add('hidden-element');
+                document.getElementById('emptySearch').classList.remove('hidden-element');
+                return;
+            }
+
+            productListEl.classList.remove('hidden-element');
+            document.getElementById('emptySearch').classList.add('hidden-element');
+
+            filtered.forEach(product => {
+                const category = getCategory(product.name);
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-[1.5rem] p-3 sm:p-4 border border-gray-100 shadow-sm hover:shadow-float transition-all group flex flex-col h-full cursor-pointer relative";
+                
+                // EVENT BUBBLING: O clique principal fica no card
+                card.onclick = () => {
+                    openProductModal(product.id);
+                };
+
+                const badgeHTML = product.topSeller 
+                    ? `<div class="absolute -top-2 -right-2 bg-brand-mango text-white text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-md z-10 flex items-center gap-1"><i data-lucide="flame" class="w-3 h-3"></i> Top Vendas</div>`
+                    : '';
+
+                card.innerHTML = `
+                    ${badgeHTML}
+                    <div class="rounded-xl overflow-hidden bg-gray-50 h-32 sm:h-48 mb-3 sm:mb-4 relative flex items-center justify-center p-2">
+                        <img src="${product.image}" alt="${product.name}" loading="lazy" class="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute bottom-2 left-2 bg-white/90 backdrop-blur px-2 py-1 rounded-md text-[10px] font-bold text-brand-dark uppercase tracking-wide border border-gray-100 shadow-sm">
+                            ${category}
+                        </div>
+                    </div>
+                    <div class="flex-1 flex flex-col">
+                        <h3 class="font-display font-bold text-sm sm:text-base text-brand-dark leading-tight mb-1" dangerouslySetInnerHTML>${product.name}</h3>
+                        <p class="text-xs text-gray-400 mb-3 font-medium">${product.quantityType}</p>
+                        
+                        <div class="mt-auto flex items-center justify-between border-t border-gray-50 pt-3">
+                            <span class="text-brand-green font-black text-sm sm:text-lg tracking-tight">${formatCurrency(product.price)}</span>
+                            <!-- EVENT STOP PROPAGATION: Impede que o clique suba para o card e abra o modal -->
+                            <button onclick="event.stopPropagation(); addToCart(${product.id})" aria-label="Adicionar ao carrinho" class="add-btn-direct w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center hover:bg-brand-green hover:text-white transition-colors transform active:scale-90">
+                                <i data-lucide="plus" class="w-4 h-4 sm:w-5 sm:h-5"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                productListEl.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {  
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+
+        const searchProducts = debounce(function() {
+            renderProducts(searchInput.value);
+        }, 300);
+
+        searchInput.addEventListener('input', searchProducts);
+
+        function filterProducts(category) {
+            currentFilter = category;
+            
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                if(btn.dataset.filter === category) {
+                    btn.classList.replace('bg-white', 'bg-brand-dark');
+                    btn.classList.replace('text-brand-text', 'text-white');
+                    btn.classList.remove('border', 'border-gray-200');
+                    btn.classList.add('shadow-md');
+                } else {
+                    btn.classList.replace('bg-brand-dark', 'bg-white');
+                    btn.classList.replace('text-white', 'text-brand-text');
+                    btn.classList.add('border', 'border-gray-200');
+                    btn.classList.remove('shadow-md');
+                }
+            });
+
+            renderProducts(searchInput.value);
+        }
+
+        function showToast(productName) {
+            const toast = document.createElement('div');
+            toast.className = "bg-brand-dark text-white px-4 py-3 rounded-xl shadow-float flex items-center gap-3 transform transition-all duration-300 translate-x-full opacity-0 pointer-events-auto border border-gray-700";
+            
+            const cleanName = productName.replace(/<br\s*[\/]?>/gi, " ");
+            
+            toast.innerHTML = `
+                <i data-lucide="check-circle" class="w-5 h-5 text-brand-green flex-shrink-0"></i> 
+                <span class="text-sm font-medium line-clamp-1">${cleanName} no carrinho!</span>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            });
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 2500);
+        }
+
+        window.addToCart = function(productId, quantity = 1) {
+            const product = products.find(p => p.id === productId);
+            const cartItem = cart.find(item => item.id === productId);
+
+            if (cartItem) {
+                cartItem.quantity += quantity;
+            } else {
+                cart.push({ ...product, quantity });
+            }
+
+            showToast(product.name);
+
+            const badge = document.getElementById('cartBadge');
+            badge.classList.remove('scale-100');
+            setTimeout(() => badge.classList.add('scale-100'), 50);
+
+            saveCartAndUI();
+            
+            if(!document.getElementById('productModal').classList.contains('hidden-element')) {
+                closeAllModals();
+            }
+        }
+
+        window.removeFromCart = function(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            saveCartAndUI();
+        }
+
+        window.updateQuantity = function(productId, delta) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    removeFromCart(productId);
+                } else {
+                    saveCartAndUI();
+                }
+            }
+        }
+
+        function saveCartAndUI() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        function getCartTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+        }
+
+        function getCartCount() {
+            return cart.reduce((count, item) => count + item.quantity, 0);
+        }
+
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function updateCartUI() {
+            const count = getCartCount();
+            const total = formatCurrency(getCartTotal());
+
+            const badge = document.getElementById('cartBadge');
+            badge.innerText = count;
+            if (count > 0) {
+                badge.classList.remove('scale-0');
+                badge.classList.add('scale-100');
+            } else {
+                badge.classList.remove('scale-100');
+                badge.classList.add('scale-0');
+            }
+
+            const footer = document.getElementById('cartSummaryFooter');
+            document.getElementById('footerCartCount').innerText = count;
+            document.getElementById('footerCartTotal').innerText = total;
+            
+            if (count > 0) {
+                footer.classList.remove('translate-y-32');
+                footer.classList.add('translate-y-0');
+            } else {
+                footer.classList.remove('translate-y-0');
+                footer.classList.add('translate-y-32');
+                renderCartModalItems();
+            }
+
+            if(!document.getElementById('cartModal').classList.contains('hidden-element')) {
+                renderCartModalItems();
+            }
+        }
+
+        const backdrop = document.getElementById('modalBackdrop');
+        const productModal = document.getElementById('productModal');
+        const cartModal = document.getElementById('cartModal');
+
+        function openProductModal(productId) {
+            const product = products.find(p => p.id === productId);
+            if(!product) return;
+
+            document.getElementById('modalProductImage').src = product.image;
+            document.getElementById('modalProductCategory').innerText = getCategory(product.name);
+            document.getElementById('modalProductName').innerHTML = product.name; 
+            document.getElementById('modalProductUnit').innerText = product.quantityType;
+            document.getElementById('modalProductPrice').innerText = formatCurrency(product.price);
+            
+            const descContainer = document.getElementById('modalProductDescription');
+            descContainer.innerHTML = product.description ? product.description : '<p class="text-gray-400 italic">Nenhuma descrição detalhada disponível.</p>';
+            
+            const btn = document.getElementById('modalAddToCartBtn');
+            btn.onclick = () => addToCart(product.id);
+
+            showModal(productModal);
+        }
+
+        function toggleCartModal() {
+            if(cartModal.classList.contains('hidden-element')) {
+                renderCartModalItems();
+                showModal(cartModal);
+            } else {
+                closeAllModals();
+            }
+        }
+
+        function renderCartModalItems() {
+            const container = document.getElementById('cartItemsContainer');
+            const emptyState = document.getElementById('emptyCartState');
+            const footerSection = document.getElementById('cartFooterSection');
+            
+            document.getElementById('cartModalTotal').innerText = formatCurrency(getCartTotal());
+
+            if (cart.length === 0) {
+                container.classList.add('hidden-element');
+                footerSection.classList.add('hidden-element');
+                emptyState.classList.remove('hidden-element');
+                return;
+            }
+
+            container.classList.remove('hidden-element');
+            footerSection.classList.remove('hidden-element');
+            emptyState.classList.add('hidden-element');
+
+            container.innerHTML = '';
+            cart.forEach(item => {
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-4 bg-white p-3 rounded-2xl shadow-sm border border-gray-100";
+                div.innerHTML = `
+                    <div class="w-16 h-16 rounded-xl bg-gray-50 flex items-center justify-center p-1 border border-gray-100 flex-shrink-0">
+                        <img src="${item.image}" alt="${item.name}" loading="lazy" class="max-w-full max-h-full object-contain mix-blend-multiply">
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="font-bold text-brand-dark text-sm leading-tight line-clamp-2" dangerouslySetInnerHTML>${item.name}</h4>
+                        <div class="text-brand-green font-bold text-sm mt-1">${formatCurrency(item.price)}</div>
+                    </div>
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="flex items-center bg-gray-100 rounded-lg p-1">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-brand-dark hover:bg-white rounded-md transition-colors shadow-sm"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                            <span class="w-6 text-center text-xs font-bold text-brand-dark">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-6 h-6 flex items-center justify-center text-gray-500 hover:text-brand-dark hover:bg-white rounded-md transition-colors shadow-sm"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                        </div>
+                        <button onclick="removeFromCart(${item.id})" class="text-[10px] text-red-400 hover:text-red-600 font-bold uppercase tracking-wider">Remover</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function showModal(modalEl) {
+            document.body.style.overflow = 'hidden';
+            backdrop.classList.remove('hidden-element', 'backdrop-exit');
+            backdrop.classList.add('backdrop-enter');
+            modalEl.classList.remove('hidden-element', 'modal-exit');
+            modalEl.classList.add('modal-enter');
+            
+            if(modalEl.id === 'cartModal') {
+                modalEl.firstElementChild.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    modalEl.firstElementChild.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)';
+                    modalEl.firstElementChild.style.transform = 'translateX(0)';
+                }, 10);
+            }
+        }
+
+        function closeAllModals() {
+            document.body.style.overflow = '';
+            backdrop.classList.remove('backdrop-enter');
+            backdrop.classList.add('backdrop-exit');
+            
+            const activeModals = [productModal, cartModal].filter(m => !m.classList.contains('hidden-element'));
+            activeModals.forEach(modal => {
+                if(modal.id === 'cartModal') {
+                    modal.firstElementChild.style.transform = 'translateX(100%)';
+                } else {
+                    modal.classList.remove('modal-enter');
+                    modal.classList.add('modal-exit');
+                }
+            });
+
+            setTimeout(() => {
+                backdrop.classList.add('hidden-element');
+                activeModals.forEach(m => m.classList.add('hidden-element'));
+            }, 300);
+        }
+
+        function goToCheckout() {
+            if (cart.length === 0) {
+                alert("Seu carrinho está vazio. Adicione produtos antes de finalizar o pedido.");
+                return;
+            }
+            window.location.href = 'checkout.html';
+        }
+
+        renderProducts();
+        updateCartUI();
+
+    </script>
 </body>
 </html>

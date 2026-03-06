@@ -1,76 +1,617 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-
+<html lang="pt-br" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
-    <title>Checkout</title>
-    <link rel="stylesheet" href="styles/styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="icon" href="assets/favicon.png" type="image/png">
-</head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Checkout | 100 Cinco Distribuidora</title>
+    
+    <!-- Favicon Inline SVG (Alta Performance e Coerente com a Logo) -->
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-family='system-ui, sans-serif' font-size='46' font-weight='900' fill='%23fff' text-anchor='middle'%3E105%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif']
+                    },
+                    colors: {
+                        brand: {
+                            bg: '#F8FAF9',
+                            dark: '#0A2517',
+                            text: '#4B5563',
+                            green: '#10B981',
+                            mango: '#F59E0B',
+                            berry: '#E11D48',
+                            acai: '#4C1D95'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(10, 37, 23, 0.08)',
+                    }
+                }
+            }
+        }
+    </script>
 
-<body>
-    <header>
-        <h1>Finalizar Pedido</h1>
-        <a href="index.html" id="homeLink" class="home-link"><i class="fas fa-home"></i></a> <!-- Ícone Home -->
-    </header>
-    <main>
-        <div id="orderSummary">
-            <div id="orderSummaryHeader">Resumo do Pedido</div>
-            <div id="orderSummaryProducts">
-                <ul id="orderItems"></ul>
-            </div>
-            <div id="orderSummaryFooter">
-                Total: R$ <span id="orderTotal">0.00</span>
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body { 
+            background-color: #F8FAF9; 
+            color: #4B5563; 
+        }
+        
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #F8FAF9; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+        
+        .glass-header {
+            background: rgba(248, 250, 249, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.1);
+        }
+
+        /* Form Inputs Customizados */
+        .input-field {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background-color: #ffffff;
+            border: 1px solid #E5E7EB;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            color: #0A2517;
+            transition: all 0.2s;
+            outline: none;
+        }
+        .input-field:focus {
+            border-color: #10B981;
+            box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+        }
+        .input-field[readonly] {
+            background-color: #F3F4F6;
+            color: #6B7280;
+            cursor: not-allowed;
+        }
+        .input-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: #4B5563;
+            margin-bottom: 0.375rem;
+        }
+
+        /* Botões de Pagamento Customizados (Radio virando Card) */
+        .payment-card input:checked + div {
+            border-color: #10B981;
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        .payment-card input:checked ~ div i {
+            color: #10B981;
+        }
+        .payment-card input:checked ~ div span {
+            color: #0A2517;
+        }
+        
+        /* Loader Botão */
+        .btn-loading {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+        .btn-loading .lucide-check-circle { display: none; }
+        .btn-loading .loader-icon { display: block; animation: spin 1s linear infinite; }
+        
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .loader-icon { display: none; }
+    </style>
+</head>
+<body class="antialiased selection:bg-brand-green selection:text-white pb-20">
+
+    <!-- Cabeçalho -->
+    <header class="sticky top-0 w-full z-40 glass-header py-4 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-brand-dark hover:text-brand-green transition-colors font-medium text-sm">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i> Voltar
+            </a>
+            <div class="flex items-center gap-3">
+                <span class="font-display font-black text-lg text-brand-dark tracking-tight">Checkout Seguro</span>
+                <i data-lucide="shield-check" class="w-5 h-5 text-brand-green"></i>
             </div>
         </div>
-        <form id="checkoutForm">
-            <div class="form-group">
-                <label for="fullName">Nome Completo:</label>
-                <input type="text" id="fullName" name="fullName" placeholder="Digite seu nome completo...">
+    </header>
+
+    <!-- Container de Toasts para Erros -->
+    <div id="toastContainer" class="fixed top-[80px] right-4 z-50 flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm"></div>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
+        
+        <form id="checkoutForm" class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            <!-- Coluna Esquerda: Formulário -->
+            <div class="lg:col-span-7 space-y-6">
+                
+                <div>
+                    <h1 class="text-3xl font-display font-black text-brand-dark mb-2">Finalizar Pedido</h1>
+                    <p class="text-brand-text text-sm">Preencha seus dados para organizarmos sua entrega.</p>
+                </div>
+
+                <!-- Seção 1: Dados Pessoais -->
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                        <div class="w-8 h-8 rounded-xl bg-brand-green/10 text-brand-green flex items-center justify-center font-bold">1</div>
+                        <h2 class="font-display font-bold text-lg text-brand-dark">Identificação</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div class="md:col-span-2">
+                            <label for="fullName" class="input-label">Nome Completo / Empresa</label>
+                            <input type="text" id="fullName" name="fullName" required placeholder="Ex: João da Silva" class="input-field">
+                        </div>
+                        <div>
+                            <label for="phone" class="input-label">Telefone (WhatsApp)</label>
+                            <input type="tel" id="phone" name="phone" required placeholder="(XX) XXXXX-XXXX" maxlength="15" class="input-field">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seção 2: Entrega -->
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                        <div class="w-8 h-8 rounded-xl bg-brand-mango/10 text-brand-mango flex items-center justify-center font-bold">2</div>
+                        <h2 class="font-display font-bold text-lg text-brand-dark">Endereço de Entrega</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-5">
+                        <div class="md:col-span-4 relative">
+                            <label for="cep" class="input-label">CEP</label>
+                            <input type="text" id="cep" name="cep" required placeholder="00000-000" maxlength="9" class="input-field">
+                            <span id="cepLoader" class="hidden absolute right-3 top-[38px]"><i data-lucide="loader-2" class="w-4 h-4 animate-spin text-brand-green"></i></span>
+                        </div>
+                        <div class="md:col-span-8 relative">
+                            <label for="city" class="input-label">Cidade</label>
+                            <input type="text" id="city" name="city" required placeholder="Buscando..." class="input-field" readonly>
+                        </div>
+                        <div class="md:col-span-9">
+                            <label for="address" class="input-label">Rua / Logradouro</label>
+                            <input type="text" id="address" name="address" required placeholder="Ex: Rua das Flores" class="input-field">
+                        </div>
+                        <div class="md:col-span-3">
+                            <label for="number" class="input-label">Número</label>
+                            <input type="text" id="number" name="number" required placeholder="Ex: 123" class="input-field">
+                        </div>
+                        <div class="md:col-span-6">
+                            <label for="complement" class="input-label">Bairro / Complemento</label>
+                            <input type="text" id="complement" name="complement" placeholder="Apto, Bloco, etc." required class="input-field">
+                        </div>
+                        <div class="md:col-span-6">
+                            <label for="deliveryDate" class="input-label">Data de Entrega Preferencial</label>
+                            <input type="date" id="deliveryDate" name="deliveryDate" required class="input-field">
+                        </div>
+                    </div>
+                    
+                    <div id="deliveryFeeAlert" class="mt-5 p-4 rounded-xl bg-brand-green/5 border border-brand-green/20 flex items-start gap-3 hidden transition-all">
+                        <i data-lucide="truck" class="w-5 h-5 text-brand-green flex-shrink-0 mt-0.5"></i>
+                        <p id="deliveryFeeMessage" class="text-sm text-brand-dark font-medium leading-snug"></p>
+                    </div>
+                </div>
+
+                <!-- Seção 3: Pagamento (Cards UX Otimizado) -->
+                <div class="bg-white p-6 sm:p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-3 mb-6 border-b border-gray-100 pb-4">
+                        <div class="w-8 h-8 rounded-xl bg-brand-berry/10 text-brand-berry flex items-center justify-center font-bold">3</div>
+                        <h2 class="font-display font-bold text-lg text-brand-dark">Pagamento na Entrega</h2>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        
+                        <label class="payment-card relative cursor-pointer group">
+                            <input type="radio" name="payment" value="Pix" class="sr-only peer" required>
+                            <div class="absolute inset-0 rounded-xl border-2 border-gray-200 peer-checked:border-brand-green transition-all bg-white"></div>
+                            <div class="relative z-10 flex flex-col items-center justify-center py-5 gap-2 transition-colors">
+                                <i data-lucide="qr-code" class="w-6 h-6 text-gray-400 group-hover:text-brand-green transition-colors"></i>
+                                <span class="text-sm font-bold text-gray-500">Pix</span>
+                            </div>
+                        </label>
+
+                        <label class="payment-card relative cursor-pointer group">
+                            <input type="radio" name="payment" value="Dinheiro" class="sr-only peer" required>
+                            <div class="absolute inset-0 rounded-xl border-2 border-gray-200 peer-checked:border-brand-green transition-all bg-white"></div>
+                            <div class="relative z-10 flex flex-col items-center justify-center py-5 gap-2 transition-colors">
+                                <i data-lucide="banknote" class="w-6 h-6 text-gray-400 group-hover:text-brand-green transition-colors"></i>
+                                <span class="text-sm font-bold text-gray-500">Dinheiro</span>
+                            </div>
+                        </label>
+
+                        <label class="payment-card relative cursor-pointer group">
+                            <input type="radio" name="payment" value="Cartão (Maquininha)" class="sr-only peer" required>
+                            <div class="absolute inset-0 rounded-xl border-2 border-gray-200 peer-checked:border-brand-green transition-all bg-white"></div>
+                            <div class="relative z-10 flex flex-col items-center justify-center py-5 gap-2 text-center transition-colors px-2">
+                                <i data-lucide="credit-card" class="w-6 h-6 text-gray-400 group-hover:text-brand-green transition-colors"></i>
+                                <span class="text-sm font-bold text-gray-500 leading-tight">Cartão<br><span class="text-[10px] font-normal">(Maquininha)</span></span>
+                            </div>
+                        </label>
+
+                    </div>
+                </div>
+
             </div>
-            <div class="form-group">
-                <label for="cep">CEP:</label>
-                <input type="text" id="cep" name="cep" required placeholder="Digite seu CEP...">
+
+            <!-- Coluna Direita: Resumo do Pedido (Sticky) -->
+            <div class="lg:col-span-5 relative">
+                <div class="sticky top-24 bg-brand-dark rounded-[2rem] p-6 sm:p-8 shadow-float text-white">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="font-display font-black text-xl flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-green"></i> Seu Pedido
+                        </h3>
+                        <span id="itemCountBadge" class="bg-white/10 text-xs px-2 py-1 rounded-md font-bold">0 itens</span>
+                    </div>
+                    
+                    <!-- Itens (Com botões de controle maiores) -->
+                    <div class="max-h-[350px] overflow-y-auto pr-2 mb-6 hide-scrollbar space-y-3" id="orderItemsContainer">
+                        <!-- Inserido via JS -->
+                    </div>
+
+                    <!-- Totais -->
+                    <div class="border-t border-white/10 pt-5 space-y-3">
+                        <div class="flex justify-between text-gray-300 text-sm">
+                            <span>Subtotal</span>
+                            <span id="subtotalDisplay" class="font-medium">R$ 0,00</span>
+                        </div>
+                        <div class="flex justify-between text-gray-300 text-sm">
+                            <span>Taxa de Entrega</span>
+                            <span id="deliveryFeeDisplay" class="text-brand-mango font-bold">A calcular</span>
+                        </div>
+                        <div class="border-t border-white/10 pt-4 mt-2 flex justify-between items-end">
+                            <span class="text-sm font-medium">Total</span>
+                            <span class="font-display font-black text-3xl text-brand-green" id="orderTotalDisplay">R$ 0,00</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" class="w-full mt-8 py-4 bg-brand-green hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform active:scale-95">
+                        <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        <i data-lucide="loader-2" class="w-5 h-5 loader-icon"></i>
+                        Confirmar via WhatsApp
+                    </button>
+                    
+                    <p class="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1.5">
+                        <i data-lucide="lock" class="w-3 h-3"></i> O pagamento será feito apenas na entrega.
+                    </p>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="address">Endereço:</label>
-                <input type="text" id="address" name="address" required placeholder="Rua Exemplo...">
-            </div>
-            <div class="form-group">
-                <label for="number">Número:</label>
-                <input type="text" id="number" name="number" required
-                    placeholder="Digite o número da sua residência...">
-            </div>
-            <div class="form-group">
-                <label for="complement">Complemento:</label>
-                <input type="text" id="complement" name="complement" placeholder="Digite um complemento...">
-            </div>
-            <div class="form-group">
-                <label for="city">Cidade:</label>
-                <input type="text" id="city" name="city" required placeholder="Digite a sua cidade...">
-            </div>
-            <div class="form-group">
-                <label for="deliveryDate">Data de Entrega:</label>
-                <input type="date" id="deliveryDate" name="deliveryDate" required>
-            </div>
-            <div class="form-group">
-                <label for="phone">Telefone para contato:</label>
-                <input type="text" id="phone" name="phone" placeholder="(XX) XXXXX-XXXX" maxlength="15">
-            </div>
-            <div class="form-group">
-                <label for="payment">Forma de Pagamento:</label>
-                <select id="payment" name="payment" required>
-                    <option value="pix">Pix</option>
-                    <option value="dinheiro">Dinheiro</option>
-                </select>
-            </div>
-            <p id="deliveryFeeMessage"></p>
-            <button type="submit" onclick="redirectToSuccessPage()">Confirmar Pedido</button>
+
         </form>
     </main>
-    <script src="src/checkout.js"></script>
-</body>
 
+    <script>
+        lucide.createIcons();
+
+        // Variáveis de Estado
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let deliveryFee = 0;
+        let isFeeCalculated = false;
+
+        const orderItemsContainer = document.getElementById('orderItemsContainer');
+        const subtotalDisplay = document.getElementById('subtotalDisplay');
+        const deliveryFeeDisplay = document.getElementById('deliveryFeeDisplay');
+        const orderTotalDisplay = document.getElementById('orderTotalDisplay');
+        const deliveryFeeAlert = document.getElementById('deliveryFeeAlert');
+        const deliveryFeeMessage = document.getElementById('deliveryFeeMessage');
+        const itemCountBadge = document.getElementById('itemCountBadge');
+
+        // Formatação de Moeda
+        function formatCurrency(value) {
+            return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        // Sistema de Notificações Bonito (Substitui o alert feio)
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            const icon = type === 'error' ? '<i data-lucide="alert-circle" class="w-5 h-5 text-red-500"></i>' : '<i data-lucide="info" class="w-5 h-5 text-brand-mango"></i>';
+            const bgClass = type === 'error' ? 'border-red-500' : 'border-brand-mango';
+            
+            toast.className = `bg-white text-brand-dark px-4 py-3 rounded-xl shadow-float flex items-start gap-3 transform transition-all duration-300 translate-x-full opacity-0 pointer-events-auto border-l-4 ${bgClass}`;
+            
+            toast.innerHTML = `
+                <div class="mt-0.5">${icon}</div>
+                <span class="text-sm font-medium leading-snug pr-2">${message}</span>
+            `;
+            
+            document.getElementById('toastContainer').appendChild(toast);
+            lucide.createIcons();
+
+            requestAnimationFrame(() => toast.classList.remove('translate-x-full', 'opacity-0'));
+
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Renderização do Resumo (Otimizada para Mobile)
+        function renderOrderSummary() {
+            if (cart.length === 0) {
+                showToast("Seu carrinho está vazio. Voltando à loja...", "info");
+                setTimeout(() => window.location.href = 'index.html', 2000);
+                return;
+            }
+
+            orderItemsContainer.innerHTML = '';
+            let subtotalPrice = 0;
+            let totalItems = 0;
+
+            cart.forEach((item, index) => {
+                const itemSubtotal = item.price * item.quantity;
+                subtotalPrice += itemSubtotal;
+                totalItems += item.quantity;
+
+                const div = document.createElement('div');
+                div.className = "flex items-center gap-3 bg-white/5 rounded-xl p-2.5 border border-white/5 relative group";
+                div.innerHTML = `
+                    <div class="w-12 h-12 rounded-lg bg-white/10 flex items-center justify-center p-1 flex-shrink-0">
+                        <img src="${item.image}" alt="${item.name}" class="max-w-full max-h-full object-contain">
+                    </div>
+                    <div class="flex-1 min-w-0 pr-16">
+                        <h4 class="font-bold text-sm truncate" dangerouslySetInnerHTML>${item.name}</h4>
+                        <div class="text-brand-green text-xs font-bold mt-0.5">${formatCurrency(itemSubtotal)}</div>
+                    </div>
+                    
+                    <!-- Controles de Quantidade Maiores (UX melhorada) -->
+                    <div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-brand-dark px-1 py-1 rounded-lg border border-white/10">
+                        <button type="button" onclick="updateQuantity(${index}, -1)" class="w-6 h-6 flex items-center justify-center hover:bg-white/10 rounded transition-colors text-gray-400 hover:text-white"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                        <span class="text-xs font-bold w-4 text-center">${item.quantity}</span>
+                        <button type="button" onclick="updateQuantity(${index}, 1)" class="w-6 h-6 flex items-center justify-center hover:bg-white/10 rounded transition-colors text-gray-400 hover:text-white"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                    </div>
+                `;
+                orderItemsContainer.appendChild(div);
+            });
+
+            subtotalDisplay.textContent = formatCurrency(subtotalPrice);
+            itemCountBadge.textContent = `${totalItems} item${totalItems > 1 ? 's' : ''}`;
+            
+            const finalTotal = subtotalPrice + (isFeeCalculated ? deliveryFee : 0);
+            orderTotalDisplay.textContent = formatCurrency(finalTotal);
+            
+            lucide.createIcons();
+        }
+
+        // Controle de Quantidade
+        window.updateQuantity = function (index, delta) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            renderOrderSummary();
+        };
+
+        // Regra de Frete (Com visual limpo)
+        function updateDeliveryFee(city) {
+            const cityLower = city.toLowerCase().trim();
+            deliveryFeeAlert.classList.remove('hidden');
+
+            if (cityLower === 'brusque' || cityLower === 'guabiruba') {
+                deliveryFee = 7.00;
+                isFeeCalculated = true;
+                deliveryFeeMessage.innerHTML = 'Frete calculado: <strong>R$ 7,00</strong> para sua região.';
+                deliveryFeeDisplay.textContent = formatCurrency(deliveryFee);
+                deliveryFeeDisplay.classList.replace('text-brand-mango', 'text-brand-green');
+            } else {
+                deliveryFee = 0;
+                isFeeCalculated = false;
+                deliveryFeeMessage.innerHTML = 'Para sua região, nossa equipe combinará o frete via WhatsApp.';
+                deliveryFeeDisplay.textContent = 'A combinar';
+                deliveryFeeDisplay.classList.replace('text-brand-green', 'text-brand-mango');
+            }
+            renderOrderSummary();
+        }
+
+        // Mascaras UX
+        document.getElementById('cep').addEventListener('input', function(e) {
+            let val = e.target.value.replace(/\D/g, '');
+            if(val.length > 5) val = val.substring(0,5) + '-' + val.substring(5,8);
+            e.target.value = val;
+        });
+
+        document.getElementById('phone').addEventListener('input', function (e) {
+            let phone = e.target.value.replace(/\D/g, '');
+            if(phone.length > 11) phone = phone.substring(0,11);
+            if(phone.length > 2) phone = '(' + phone.substring(0,2) + ') ' + phone.substring(2);
+            if(phone.length > 9) phone = phone.substring(0,10) + '-' + phone.substring(10);
+            e.target.value = phone;
+        });
+
+        // API ViaCEP
+        document.getElementById('cep').addEventListener('blur', function () {
+            const cep = this.value.replace(/\D/g, '');
+            if (cep.length === 8) {
+                document.getElementById('cepLoader').classList.remove('hidden');
+                fetch(`https://viacep.com.br/ws/${cep}/json/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('cepLoader').classList.add('hidden');
+                        if (!data.erro) {
+                            document.getElementById('address').value = data.logradouro;
+                            document.getElementById('complement').value = data.bairro;
+                            document.getElementById('city').value = data.localidade;
+                            document.getElementById('city').readOnly = true;
+                            updateDeliveryFee(data.localidade);
+                            document.getElementById('number').focus();
+                        } else {
+                            showToast("CEP não encontrado. Preencha manualmente.");
+                            document.getElementById('city').readOnly = false;
+                            document.getElementById('city').value = '';
+                        }
+                    })
+                    .catch(() => {
+                        document.getElementById('cepLoader').classList.add('hidden');
+                        document.getElementById('city').readOnly = false;
+                    });
+            }
+        });
+
+        // Trigger manual caso digite a cidade
+        document.getElementById('city').addEventListener('blur', function () {
+            if(!this.readOnly && this.value) {
+                updateDeliveryFee(this.value);
+            }
+        });
+
+        // Local Storage e Data Inicial
+        function loadCustomerData() {
+            const data = JSON.parse(localStorage.getItem('customerData'));
+            
+            // Setar data mínima para hoje
+            const dateInput = document.getElementById('deliveryDate');
+            const today = new Date();
+            // Ajustar fuso horário para Brasil
+            today.setMinutes(today.getMinutes() - today.getTimezoneOffset());
+            const todayStr = today.toISOString().split('T')[0];
+            dateInput.min = todayStr;
+            
+            if (data) {
+                document.getElementById('fullName').value = data.fullName || '';
+                document.getElementById('cep').value = data.cep || '';
+                document.getElementById('address').value = data.address || '';
+                document.getElementById('number').value = data.number || '';
+                document.getElementById('complement').value = data.complement || '';
+                document.getElementById('city').value = data.city || '';
+                document.getElementById('phone').value = data.phone || '';
+                
+                if(data.city) updateDeliveryFee(data.city);
+            }
+            
+            // Se não tiver data salva ou for antiga, preenche com hoje
+            if(!dateInput.value || dateInput.value < todayStr) {
+                dateInput.value = todayStr;
+            }
+        }
+
+        function saveCustomerData() {
+            const data = {
+                fullName: document.getElementById('fullName').value,
+                cep: document.getElementById('cep').value,
+                address: document.getElementById('address').value,
+                number: document.getElementById('number').value,
+                complement: document.getElementById('complement').value,
+                city: document.getElementById('city').value,
+                phone: document.getElementById('phone').value,
+            };
+            localStorage.setItem('customerData', JSON.stringify(data));
+        }
+
+        // ENVIO DO FORMULÁRIO (TELEGRAM)
+        document.getElementById('checkoutForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            
+            if (cart.length === 0) {
+                showToast("Adicione produtos antes de finalizar.");
+                return;
+            }
+
+            // Pega o valor do radio button selecionado
+            const paymentRadio = document.querySelector('input[name="payment"]:checked');
+            if (!paymentRadio) {
+                showToast("Selecione uma forma de pagamento.");
+                return;
+            }
+            const paymentText = paymentRadio.value;
+
+            const btn = document.getElementById('submitBtn');
+            btn.classList.add('btn-loading');
+            btn.disabled = true;
+
+            saveCustomerData();
+
+            const fullName = document.getElementById('fullName').value;
+            const cep = document.getElementById('cep').value;
+            const address = document.getElementById('address').value;
+            const number = document.getElementById('number').value;
+            const complement = document.getElementById('complement').value;
+            const city = document.getElementById('city').value;
+            const deliveryDate = document.getElementById('deliveryDate').value;
+            const phone = document.getElementById('phone').value;
+
+            const formattedDate = deliveryDate.split('-').reverse().join('/');
+            
+            let subtotal = 0;
+            // Emoji na lista para ficar top no Telegram
+            const orderSummaryText = cart.map(item => {
+                const itemTotal = item.quantity * item.price;
+                subtotal += itemTotal;
+                return `▪️ ${item.quantity}x ${item.name} — ${formatCurrency(itemTotal)}`;
+            }).join('\n');
+
+            const finalTotal = subtotal + (isFeeCalculated ? deliveryFee : 0);
+            const feeText = isFeeCalculated ? formatCurrency(deliveryFee) : 'Combinar via WhatsApp';
+
+            const message = `
+🚨 *NOVO PEDIDO PELO SITE* 🚨
+
+👤 *Cliente:* ${fullName}
+📱 *WhatsApp:* [${phone}](https://wa.me/55${phone.replace(/\D/g, '')})
+
+📍 *Endereço de Entrega:*
+${address}, ${number}
+${complement ? `Bairro/Compl: ${complement}\n` : ''}Cidade: ${city} | CEP: ${cep}
+📅 *Entrega para:* ${formattedDate}
+
+🛒 *RESUMO DO PEDIDO:*
+${orderSummaryText}
+
+💳 *Forma de Pagamento:* ${paymentText}
+🚚 *Taxa de Entrega:* ${feeText}
+
+💰 *TOTAL DO PEDIDO:* *${formatCurrency(finalTotal)}*
+`;
+
+            // ⚠️ ALERTA DE SEGURANÇA: Mudar isso para Backend futuramente.
+            const telegramBotToken = '7771133074:AAHRznRkXHjBBdpfh6nrQbLymu6WwdzqrKg';
+            const telegramChatId = '-1002415622182';
+            const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+
+            try {
+                const response = await fetch(telegramUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        chat_id: telegramChatId,
+                        text: message,
+                        parse_mode: 'Markdown'
+                    })
+                });
+
+                if (response.ok) {
+                    localStorage.removeItem('cart');
+                    window.location.href = 'pedido-sucesso.html'; 
+                } else {
+                    const err = await response.json();
+                    console.error("Telegram API Error:", err);
+                    showToast("Erro de comunicação com o sistema. Tente contato via WhatsApp.");
+                    btn.classList.remove('btn-loading');
+                    btn.disabled = false;
+                }
+            } catch (error) {
+                console.error('Erro de Fetch:', error);
+                showToast("Verifique sua conexão com a internet e tente novamente.");
+                btn.classList.remove('btn-loading');
+                btn.disabled = false;
+            }
+        });
+
+        // Inicializar
+        loadCustomerData();
+        renderOrderSummary();
+    </script>
+</body>
 </html>
