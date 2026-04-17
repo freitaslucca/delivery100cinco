@@ -1,18 +1,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     const products = [
-        { id: 1, name: 'Abacaxi', price: 33.00, image: 'assets/polpas/abacaxi.webp', quantityType: '10 unid. 100g' },
-        { id: 2, name: 'Abacaxi com Hortelã', price: 36.00, image: 'assets/polpas/abacaxichortela.webp', quantityType: '10 unid. 100g' },
-        { id: 3, name: 'Açaí', price: 38.00, image: 'assets/polpas/acai.webp', quantityType: '10 unid. 100g' },
-        { id: 4, name: 'Acerola', price: 27.00, image: 'assets/polpas/acerola.webp', quantityType: '10 unid. 100g' },
-        { id: 5, name: 'Acerola com Laranja', price: 32.00, image: 'assets/polpas/acerolaelaranja.webp', quantityType: '10 unid. 100g' },
-        { id: 6, name: 'Amora', price: 44.00, image: 'assets/polpas/amora.webp', quantityType: '10 unid. 100g' },
-        { id: 7, name: 'Cacau', price: 33.00, image: 'assets/polpas/cacau.webp', quantityType: '10 unid. 100g' },
-        { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.webp', quantityType: '10 unid. 100g' },
-        { id: 9, name: 'Caju', price: 27.00, image: 'assets/polpas/caju.webp', quantityType: '10 unid. 100g' },
-        { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.webp', quantityType: '10 unid. 100g' },
-        { id: 11, name: 'Cupuaçu', price: 34.00, image: 'assets/polpas/cucuacu.webp', quantityType: '10 unid. 100g' },
-        { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.webp', quantityType: '10 unid. 100g' },
-        { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.webp', quantityType: '10 unid. 100g', description: `
+  { id: 1, name: 'Abacaxi', price: 31.00, image: 'assets/polpas/abacaxi.webp', quantityType: '10 unid. 100g' },
+  { id: 2, name: 'Abacaxi com Hortelã', price: 34.00, image: 'assets/polpas/abacaxichortela.webp', quantityType: '10 unid. 100g' },
+  { id: 3, name: 'Açaí', price: 43.00, image: 'assets/polpas/acai.webp', quantityType: '10 unid. 100g' },
+  { id: 4, name: 'Acerola', price: 27.00, image: 'assets/polpas/acerola.webp', quantityType: '10 unid. 100g' },
+  { id: 5, name: 'Acerola com Laranja', price: 32.00, image: 'assets/polpas/acerolaelaranja.webp', quantityType: '10 unid. 100g' },
+  { id: 6, name: 'Amora', price: 44.00, image: 'assets/polpas/amora.webp', quantityType: '10 unid. 100g' },
+  { id: 7, name: 'Cacau', price: 33.00, image: 'assets/polpas/cacau.webp', quantityType: '10 unid. 100g' },
+  { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.webp', quantityType: '10 unid. 100g' },
+  { id: 9, name: 'Caju', price: 28.00, image: 'assets/polpas/caju.webp', quantityType: '10 unid. 100g' },
+  { id: 10, name: 'Coco Verde', price: 34.00, image: 'assets/polpas/coco.webp', quantityType: '10 unid. 100g' }, // Na tabela está apenas "Coco"
+  { id: 11, name: 'Cupuaçu', price: 38.00, image: 'assets/polpas/cucuacu.webp', quantityType: '10 unid. 100g' },
+  { id: 12, name: 'Mix Beta', price: 36.00, image: 'assets/polpas/mixbeta.webp', quantityType: '10 unid. 100g' }, // Na tabela: "Suco Mix Beta"
+  { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.webp', quantityType: '10 unid. 100g', description: `
       <p>
         Polpa Mista de Uva, Morango, Maçã, Açaí, Beterraba e Gengibre. Ingredientes vindos das frutas e vegetais, na combinação perfeita para o equilíbrio do organismo.
         <br><strong>MINERAIS:</strong> Ácido Fólico | Cálcio | Cobre | Ferro | Fósforo | Magnésio | Manganês | Potássio | Selênio | Sódio | Zinco.
@@ -69,33 +69,33 @@ document.addEventListener('DOMContentLoaded', function() {
         *%Valores diários com base em uma dieta de 2.000 kcal ou 8.400 kJ. Seus valores diários podem ser maiores ou menores dependendo de suas necessidades energéticas.
         **VD não estabelecido.
       </p>
-    ` },
-        { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.webp', quantityType: '10 unid. 100g' },
-        { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.webp', quantityType: 'Pacote 1Kg' },
-        { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.webp', quantityType: '10 unid. 100g' },
-        { id: 17, name: 'Goiaba', price: 27.00, image: 'assets/polpas/goiaba.webp', quantityType: '10 unid. 100g' },
-        { id: 18, name: 'Graviola', price: 32.00, image: 'assets/polpas/graviola.webp', quantityType: '10 unid. 100g' },
-        { id: 19, name: 'Kiwi', price: 27.00, image: 'assets/polpas/kiwi.webp', quantityType: '10 unid. 100g' },
-        { id: 20, name: 'Laranja', price: 34.00, image: 'assets/polpas/laranja.webp', quantityType: '10 unid. 100g' },
-        { id: 21, name: 'Limão', price: 27.00, image: 'assets/polpas/limao.webp', quantityType: '10 unid. 100g' },
-        { id: 22, name: 'Mamão com Laranja', price: 32.00, image: 'assets/polpas/mamaoelaranja.webp', quantityType: '10 unid. 100g' },
-        { id: 23, name: 'Manga', price: 27.00, image: 'assets/polpas/manga.webp', quantityType: '10 unid. 100g' },
-        { id: 24, name: 'Maracujá', price: 43.50, image: 'assets/polpas/maracuja.webp', quantityType: '10 unid. 100g' },
-        { id: 25, name: 'Melancia', price: 27.00, image: 'assets/polpas/melancia.webp', quantityType: '10 unid. 100g' },
-        { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'assets/polpas/bananamamaomaca.webp', quantityType: '10 unid. 100g' },
-        { id: 27, name: 'Morango', price: 29.00, image: 'assets/polpas/morango.webp', quantityType: '10 unid. 100g' },
-        { id: 28, name: 'Pêssego', price: 32.00, image: 'assets/polpas/pessego.webp', quantityType: '10 unid. 100g' },
-        { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'assets/paodequeijo.png', quantityType: 'Balde 4 Kg' },
-        { id: 31, name: 'Tamarindo', price: 27.00, image: 'assets/polpas/tamarindo.webp', quantityType: '10 unid. 100g' },
-        { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 34.00,image: 'assets/polpas/tangeirna.webp', quantityType: 'Pacote 1Kg'},
-        { id: 33, name: 'Umbu', price: 32.00, image: 'assets/polpas/umbu.webp', quantityType: '10 unid. 100g' },
-        { id: 34, name: 'Uva', price: 32.00, image: 'assets/polpas/uva.webp', quantityType: '10 unid. 100g' },
-        { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg' },
-        { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' },
-        { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' },
-        { id: 38, name: 'Morango Congelado', price: 29.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
-        { id: 40, name: 'Framboesa Congelada<br>(Sob Encomenda)', price: 78.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-framboesa-2.png', quantityType: 'Pacote 1,02 Kg' }
-    ];
+    ` }, // Na tabela: "Suco Mix Roxo"
+  { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.webp', quantityType: '10 unid. 100g' }, // Na tabela: "Suco mix verde"
+  { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.webp', quantityType: 'Pacote 1Kg' }, // ALERTA: Não existe na tabela
+  { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.webp', quantityType: '10 unid. 100g' },
+  { id: 17, name: 'Goiaba', price: 28.00, image: 'assets/polpas/goiaba.webp', quantityType: '10 unid. 100g' },
+  { id: 18, name: 'Graviola', price: 36.00, image: 'assets/polpas/graviola.webp', quantityType: '10 unid. 100g' },
+  { id: 19, name: 'Kiwi', price: 32.00, image: 'assets/polpas/kiwi.webp', quantityType: '10 unid. 100g' },
+  { id: 20, name: 'Laranja', price: 39.90, image: 'assets/polpas/laranja.webp', quantityType: '10 unid. 100g' }, // Na tabela: "Suco de Laranja"
+  { id: 21, name: 'Limão', price: 27.00, image: 'assets/polpas/limao.webp', quantityType: '10 unid. 100g' }, // ALERTA: Não existe na tabela
+  { id: 22, name: 'Mamão com Laranja', price: 32.00, image: 'assets/polpas/mamaoelaranja.webp', quantityType: '10 unid. 100g' }, // ALERTA: Não existe na tabela
+  { id: 23, name: 'Manga', price: 28.00, image: 'assets/polpas/manga.webp', quantityType: '10 unid. 100g' },
+  { id: 24, name: 'Maracujá', price: 39.00, image: 'assets/polpas/maracuja.webp', quantityType: '10 unid. 100g' }, // Na tabela: "Maracujá sem semente"
+  { id: 25, name: 'Melancia', price: 27.00, image: 'assets/polpas/melancia.webp', quantityType: '10 unid. 100g' },
+  { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'assets/polpas/bananamamaomaca.webp', quantityType: '10 unid. 100g' }, // ALERTA: Não existe na tabela
+  { id: 27, name: 'Morango', price: 29.00, image: 'assets/polpas/morango.webp', quantityType: '10 unid. 100g' },
+  { id: 28, name: 'Pêssego', price: 32.00, image: 'assets/polpas/pessego.webp', quantityType: '10 unid. 100g' },
+  { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'assets/paodequeijo.png', quantityType: 'Balde 4 Kg' }, // ALERTA: Não existe na tabela
+  { id: 31, name: 'Tamarindo', price: 32.00, image: 'assets/polpas/tamarindo.webp', quantityType: '10 unid. 100g' },
+  { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 34.00, image: 'assets/polpas/tangeirna.webp', quantityType: 'Pacote 1Kg'}, // ALERTA: Não existe na tabela
+  { id: 33, name: 'Umbu', price: 31.00, image: 'assets/polpas/umbu.webp', quantityType: '10 unid. 100g' },
+  { id: 34, name: 'Uva', price: 29.00, image: 'assets/polpas/uva.webp', quantityType: '10 unid. 100g' },
+  { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 46.80, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg' }, // Na tabela: "Açaí 1,6" (considerado valor da última coluna: 46,80)
+  { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' }, // Considerado valor da última coluna
+  { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' }, // Considerado valor da última coluna
+  { id: 38, name: 'Morango Congelado', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' }, // Considerado valor da última coluna
+  { id: 40, name: 'Framboesa Congelada<br>(Sob Encomenda)', price: 78.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-framboesa-2.png', quantityType: 'Pacote 1,02 Kg' } // ALERTA: Não existe na tabela
+];
 
     const productList = document.getElementById('productList');
     const searchInput = document.getElementById('searchInput');
