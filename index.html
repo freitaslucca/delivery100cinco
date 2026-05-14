@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Pedidos | 100 Cinco Distribuidora</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-family='system-ui, sans-serif' font-size='46' font-weight='900' fill='%23fff' text-anchor='middle'%3E105%3C/text%3E%3C/svg%3E" type="image/svg+xml">    
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -40,7 +38,6 @@
         }
     </script>
 
-    <!-- Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
@@ -114,16 +111,13 @@
 </head>
 <body class="antialiased selection:bg-brand-green selection:text-white">
 
-    <!-- Blobs -->
     <div class="blob bg-brand-mango/20 w-[400px] h-[400px] rounded-full top-0 left-[-10%] fixed"></div>
     <div class="blob bg-brand-green/20 w-[500px] h-[500px] rounded-full bottom-[20%] right-[-10%] fixed" style="animation-delay: -5s;"></div>
 
-    <!-- Announcement Bar -->
     <div class="fixed top-0 w-full bg-brand-green text-white text-[10px] sm:text-xs font-bold text-center py-1.5 sm:py-2 px-4 tracking-wider uppercase z-50 shadow-sm">
         🚚 Entregas rápidas para Brusque e Guabiruba
     </div>
 
-    <!-- Cabeçalho Fixo -->
     <header class="fixed top-[28px] sm:top-[32px] w-full z-40 glass-header py-3 transition-all duration-300 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between">
             <a href="#" class="flex items-center gap-3 group">
@@ -143,7 +137,6 @@
         </div>
     </header>
 
-    <!-- Container do Toast Notification -->
     <div id="toastContainer" class="fixed top-[85px] right-4 z-50 flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm"></div>
 
     <main class="max-w-7xl mx-auto px-4 sm:px-6 pt-36 sm:pt-40 pb-10 relative z-10">
@@ -170,8 +163,7 @@
         </div>
 
         <div id="productList" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
-            <!-- Renderizado via JS -->
-        </div>
+            </div>
 
         <div id="emptySearch" class="hidden-element text-center py-16">
             <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -182,7 +174,6 @@
         </div>
     </main>
 
-    <!-- Rodapé Flutuante do Carrinho -->
     <div id="cartSummaryFooter" class="fixed bottom-6 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:w-[400px] bg-brand-dark text-white rounded-2xl p-4 shadow-float z-30 transition-all duration-500 transform translate-y-32 flex items-center justify-between cursor-pointer border border-gray-700" onclick="toggleCartModal()">
         <div class="flex items-center gap-3">
             <div class="w-12 h-12 bg-brand-green rounded-xl flex items-center justify-center relative shadow-inner">
@@ -199,10 +190,8 @@
         </button>
     </div>
 
-    <!-- Modais -->
     <div id="modalBackdrop" class="fixed inset-0 bg-brand-dark/60 backdrop-blur-sm z-50 hidden-element" onclick="closeAllModals()"></div>
 
-    <!-- Modal Produto -->
     <div id="productModal" class="fixed inset-0 z-50 hidden-element flex items-center justify-center p-4 pointer-events-none">
         <div class="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden pointer-events-auto relative flex flex-col max-h-[90vh]">
             <button onclick="closeAllModals()" class="absolute top-4 right-4 w-8 h-8 bg-white/80 backdrop-blur rounded-full flex items-center justify-center text-gray-600 hover:text-brand-dark z-10 shadow-sm">
@@ -233,7 +222,6 @@
         </div>
     </div>
 
-    <!-- Modal Carrinho -->
     <div id="cartModal" class="fixed inset-y-0 right-0 z-50 hidden-element flex justify-end w-full max-w-md pointer-events-none">
         <div class="bg-white h-full w-full shadow-2xl flex flex-col pointer-events-auto">
             
@@ -273,71 +261,81 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script>
         lucide.createIcons();
 
-        // Produtos
+        // Base de Dados de Produtos Isolada
         const products = [
-            { id: 1, name: 'Abacaxi', price: 33.00, image: 'assets/polpas/abacaxi.png', quantityType: '10 unid. 100g' },
-            { id: 2, name: 'Abacaxi com Hortelã', price: 36.00, image: 'assets/polpas/abacaxichortela.png', quantityType: '10 unid. 100g' },
-            { id: 3, name: 'Açaí', price: 38.00, image: 'assets/polpas/acai.png', quantityType: '10 unid. 100g', topSeller: true },
-            { id: 4, name: 'Acerola', price: 27.00, image: 'assets/polpas/acerola.png', quantityType: '10 unid. 100g' },
-            { id: 5, name: 'Acerola com Laranja', price: 32.00, image: 'assets/polpas/acerolaelaranja.png', quantityType: '10 unid. 100g' },
-            { id: 6, name: 'Amora', price: 44.00, image: 'assets/polpas/amora.png', quantityType: '10 unid. 100g' },
-            { id: 7, name: 'Cacau', price: 33.00, image: 'assets/polpas/cacau.png', quantityType: '10 unid. 100g' },
-            { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.png', quantityType: '10 unid. 100g' },
-            { id: 9, name: 'Caju', price: 27.00, image: 'assets/polpas/caju.png', quantityType: '10 unid. 100g' },
-            { id: 10, name: 'Coco Verde', price: 29.00, image: 'assets/polpas/coco.png', quantityType: '10 unid. 100g' },
-            { id: 11, name: 'Cupuaçu', price: 34.00, image: 'assets/polpas/cucuacu.png', quantityType: '10 unid. 100g' },
-            { id: 12, name: 'Mix Beta', price: 29.90, image: 'assets/polpas/mixbeta.png', quantityType: '10 unid. 100g' },
-            { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.png', quantityType: '10 unid. 100g', topSeller: true, description: `
-              <p>Polpa Mista de Uva, Morango, Maçã, Açaí, Beterraba e Gengibre. Ingredientes vindos das frutas e vegetais, na combinação perfeita para o equilíbrio do organismo.
-              <br><strong>MINERAIS:</strong> Ácido Fólico | Cálcio | Cobre | Ferro | Fósforo | Magnésio | Manganês | Potássio | Selênio | Sódio | Zinco.
-              <br><strong>VITAMINAS:</strong> A | B1 | B2 | B5 | B6 | C | D | E | K.</p>
-              <h3>Embalagem Disponível:</h3>
-              <p>Pacotes com 10 unidades de 100g (cx. 10kg)</p>
-              <h3>Polpa Mix nº 2</h3>
-              <p>Informação Nutricional: Porção de 100g:</p>
-              <table>
-                <thead><tr><th>Quantidade por porção</th><th>%VD *</th></tr></thead>
-                <tbody>
-                  <tr><td>Valor Energético: 53kcal = 223kJ</td><td>3</td></tr>
-                  <tr><td>Carboidratos (g): 11</td><td>4</td></tr>
-                  <tr><td>Proteínas (g): 0,8</td><td>1</td></tr>
-                  <tr><td>Gorduras Totais (g): 0,6</td><td>1</td></tr>
-                  <tr><td>Gorduras Saturadas (g): 0</td><td>0</td></tr>
-                  <tr><td>Gorduras Trans (g): 0</td><td>**</td></tr>
-                  <tr><td>Fibra Alimentar (g): 1,4</td><td>6</td></tr>
-                  <tr><td>Sódio (mg): 7</td><td>0</td></tr>
-                </tbody>
-              </table>
-              <p>*%Valores diários com base em uma dieta de 2.000 kcal ou 8.400 kJ. Seus valores diários podem ser maiores ou menores dependendo de suas necessidades energéticas. **VD não estabelecido.</p>
+            { id: 1, name: 'Abacaxi', price: 31.00, image: 'assets/polpas/abacaxi.webp', quantityType: '10 unid. 100g' },
+            { id: 2, name: 'Abacaxi com Hortelã', price: 34.00, image: 'assets/polpas/abacaxichortela.webp', quantityType: '10 unid. 100g' },
+            { id: 3, name: 'Açaí', price: 43.00, image: 'assets/polpas/acai.webp', quantityType: '10 unid. 100g' },
+            { id: 4, name: 'Acerola', price: 27.00, image: 'assets/polpas/acerola.webp', quantityType: '10 unid. 100g' },
+            { id: 5, name: 'Acerola com Laranja', price: 32.00, image: 'assets/polpas/acerolaelaranja.webp', quantityType: '10 unid. 100g' },
+            { id: 6, name: 'Amora', price: 44.00, image: 'assets/polpas/amora.webp', quantityType: '10 unid. 100g' },
+            { id: 7, name: 'Cacau', price: 33.00, image: 'assets/polpas/cacau.webp', quantityType: '10 unid. 100g' },
+            { id: 8, name: 'Cajá', price: 34.00, image: 'assets/polpas/caja.webp', quantityType: '10 unid. 100g' },
+            { id: 9, name: 'Caju', price: 28.00, image: 'assets/polpas/caju.webp', quantityType: '10 unid. 100g' },
+            { id: 10, name: 'Coco Verde', price: 34.00, image: 'assets/polpas/coco.webp', quantityType: '10 unid. 100g' },
+            { id: 11, name: 'Cupuaçu', price: 38.00, image: 'assets/polpas/cucuacu.webp', quantityType: '10 unid. 100g' },
+            { id: 12, name: 'Mix Beta', price: 36.00, image: 'assets/polpas/mixbeta.webp', quantityType: '10 unid. 100g' },
+            { id: 13, name: 'Mix Roxo', price: 36.00, image: 'assets/polpas/mixroxo.webp', quantityType: '10 unid. 100g', description: `
+                <p>
+                    Polpa Mista de Uva, Morango, Maçã, Açaí, Beterraba e Gengibre. Ingredientes vindos das frutas e vegetais, na combinação perfeita para o equilíbrio do organismo.
+                    <br><strong>MINERAIS:</strong> Ácido Fólico | Cálcio | Cobre | Ferro | Fósforo | Magnésio | Manganês | Potássio | Selênio | Sódio | Zinco.
+                    <br><strong>VITAMINAS:</strong> A | B1 | B2 | B5 | B6 | C | D | E | K.
+                </p>
+                <h3>Embalagem Disponível:</h3>
+                <p>Pacotes com 10 unidades de 100g (cx. 10kg)</p>
+                <h3>Polpa Mix nº 2</h3>
+                <p>Informação Nutricional: Porção de 100g:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Quantidade por porção</th>
+                            <th>%VD *</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Valor Energético: 53kcal = 223kJ</td><td>3</td></tr>
+                        <tr><td>Carboidratos (g): 11</td><td>4</td></tr>
+                        <tr><td>Proteínas (g): 0,8</td><td>1</td></tr>
+                        <tr><td>Gorduras Totais (g): 0,6</td><td>1</td></tr>
+                        <tr><td>Gorduras Saturadas (g): 0</td><td>0</td></tr>
+                        <tr><td>Gorduras Trans (g): 0</td><td>**</td></tr>
+                        <tr><td>Fibra Alimentar (g): 1,4</td><td>6</td></tr>
+                        <tr><td>Sódio (mg): 7</td><td>0</td></tr>
+                    </tbody>
+                </table>
+                <p>
+                    Dados nutricionais obtidos através de literatura, conforme previsto na RDC n°360/2003.
+                    *%Valores diários com base em uma dieta de 2.000 kcal ou 8.400 kJ. Seus valores diários podem ser maiores ou menores dependendo de suas necessidades energéticas.
+                    **VD não estabelecido.
+                </p>
             ` },
-            { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.png', quantityType: '10 unid. 100g' },
-            { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.png', quantityType: 'Pacote 1Kg' },
-            { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.png', quantityType: '10 unid. 100g' },
-            { id: 17, name: 'Goiaba', price: 27.00, image: 'assets/polpas/goiaba.png', quantityType: '10 unid. 100g' },
-            { id: 18, name: 'Graviola', price: 32.00, image: 'assets/polpas/graviola.png', quantityType: '10 unid. 100g' },
-            { id: 19, name: 'Kiwi', price: 27.00, image: 'assets/polpas/kiwi.png', quantityType: '10 unid. 100g' },
-            { id: 20, name: 'Laranja', price: 34.00, image: 'assets/polpas/laranja.png', quantityType: '10 unid. 100g' },
-            { id: 21, name: 'Limão', price: 27.00, image: 'assets/polpas/limao.png', quantityType: '10 unid. 100g' },
-            { id: 22, name: 'Mamão com Laranja', price: 32.00, image: 'assets/polpas/mamaoelaranja.png', quantityType: '10 unid. 100g' },
-            { id: 23, name: 'Manga', price: 27.00, image: 'assets/polpas/manga.png', quantityType: '10 unid. 100g' },
-            { id: 24, name: 'Maracujá', price: 43.50, image: 'assets/polpas/maracuja.png', quantityType: '10 unid. 100g' },
-            { id: 25, name: 'Melancia', price: 27.00, image: 'assets/polpas/melancia.png', quantityType: '10 unid. 100g' },
-            { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'assets/polpas/bananamamaomaca.png', quantityType: '10 unid. 100g' },
-            { id: 27, name: 'Morango', price: 29.00, image: 'assets/polpas/morango.png', quantityType: '10 unid. 100g' },
-            { id: 28, name: 'Pêssego', price: 32.00, image: 'assets/polpas/pessego.png', quantityType: '10 unid. 100g' },
+            { id: 14, name: 'Mix Verde', price: 36.00, image: 'assets/polpas/mixverde.webp', quantityType: '10 unid. 100g' },
+            { id: 15, name: 'Framboesa<br>(Sob Encomenda)', price: 64.00, image: 'assets/polpas/fraboesa.webp', quantityType: 'Pacote 1Kg' },
+            { id: 16, name: 'Frutas Vermelhas', price: 46.00, image: 'assets/polpas/frutasvermelhas.webp', quantityType: '10 unid. 100g' },
+            { id: 17, name: 'Goiaba', price: 28.00, image: 'assets/polpas/goiaba.webp', quantityType: '10 unid. 100g' },
+            { id: 18, name: 'Graviola', price: 36.00, image: 'assets/polpas/graviola.webp', quantityType: '10 unid. 100g' },
+            { id: 19, name: 'Kiwi', price: 32.00, image: 'assets/polpas/kiwi.webp', quantityType: '10 unid. 100g' },
+            { id: 20, name: 'Laranja', price: 39.90, image: 'assets/polpas/laranja.webp', quantityType: '10 unid. 100g' },
+            { id: 21, name: 'Limão', price: 27.00, image: 'assets/polpas/limao.webp', quantityType: '10 unid. 100g' },
+            { id: 22, name: 'Mamão com Laranja', price: 32.00, image: 'assets/polpas/mamaoelaranja.webp', quantityType: '10 unid. 100g' },
+            { id: 23, name: 'Manga', price: 28.00, image: 'assets/polpas/manga.webp', quantityType: '10 unid. 100g' },
+            { id: 24, name: 'Maracujá', price: 39.00, image: 'assets/polpas/maracuja.webp', quantityType: '10 unid. 100g' },
+            { id: 25, name: 'Melancia', price: 27.00, image: 'assets/polpas/melancia.webp', quantityType: '10 unid. 100g' },
+            { id: 26, name: 'Mista<br>(Sob Encomenda)', price: 27.00, image: 'assets/polpas/bananamamaomaca.webp', quantityType: '10 unid. 100g' },
+            { id: 27, name: 'Morango', price: 29.00, image: 'assets/polpas/morango.webp', quantityType: '10 unid. 100g' },
+            { id: 28, name: 'Pêssego', price: 32.00, image: 'assets/polpas/pessego.webp', quantityType: '10 unid. 100g' },
             { id: 30, name: 'Pão de Queijo<br>(Sob Encomenda)', price: 79.00, image: 'assets/paodequeijo.png', quantityType: 'Balde 4 Kg' },
-            { id: 31, name: 'Tamarindo', price: 27.00, image: 'assets/polpas/tamarindo.png', quantityType: '10 unid. 100g' },
-            { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 34.00,image: 'assets/polpas/tangeirna.png', quantityType: 'Pacote 1Kg'},
-            { id: 33, name: 'Umbu', price: 32.00, image: 'assets/polpas/umbu.png', quantityType: '10 unid. 100g' },
-            { id: 34, name: 'Uva', price: 32.00, image: 'assets/polpas/uva.png', quantityType: '10 unid. 100g' },
-            { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 39.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg', topSeller: true },
+            { id: 31, name: 'Tamarindo', price: 32.00, image: 'assets/polpas/tamarindo.webp', quantityType: '10 unid. 100g' },
+            { id: 32, name: 'Tangerina<br>(Sob Encomenda)', price: 34.00, image: 'assets/polpas/tangeirna.webp', quantityType: 'Pacote 1Kg'},
+            { id: 33, name: 'Umbu', price: 31.00, image: 'assets/polpas/umbu.webp', quantityType: '10 unid. 100g' },
+            { id: 34, name: 'Uva', price: 29.00, image: 'assets/polpas/uva.webp', quantityType: '10 unid. 100g' },
+            { id: 35, name: 'Açaí tradicional<br>com Guaraná', price: 46.80, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/acai_1600g_tradicional_128x171.png', quantityType: 'Pote 1,6 Kg' },
             { id: 36, name: 'Amora Congelada', price: 49.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-amora-2.png', quantityType: 'Pacote 1,02 Kg' },
             { id: 37, name: 'Mirtilo Congelado', price: 68.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-blueberry-2.png', quantityType: 'Pacote 1,02 Kg' },
-            { id: 38, name: 'Morango Congelado', price: 29.90, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
+            { id: 38, name: 'Morango Congelado', price: 29.00, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-morango-2.png', quantityType: 'Pacote 1,02 Kg' },
             { id: 40, name: 'Framboesa Congelada<br>(Sob Encomenda)', price: 78.50, image: 'https://www.ricaeli.com.br/arquivos/pics_produto/fruta-cong-framboesa-2.png', quantityType: 'Pacote 1,02 Kg' }
         ];
 
@@ -398,12 +396,11 @@
                         </div>
                     </div>
                     <div class="flex-1 flex flex-col">
-                        <h3 class="font-display font-bold text-sm sm:text-base text-brand-dark leading-tight mb-1" dangerouslySetInnerHTML>${product.name}</h3>
+                        <h3 class="font-display font-bold text-sm sm:text-base text-brand-dark leading-tight mb-1">${product.name}</h3>
                         <p class="text-xs text-gray-400 mb-3 font-medium">${product.quantityType}</p>
                         
                         <div class="mt-auto flex items-center justify-between border-t border-gray-50 pt-3">
                             <span class="text-brand-green font-black text-sm sm:text-lg tracking-tight">${formatCurrency(product.price)}</span>
-                            <!-- EVENT STOP PROPAGATION: Impede que o clique suba para o card e abra o modal -->
                             <button onclick="event.stopPropagation(); addToCart(${product.id})" aria-label="Adicionar ao carrinho" class="add-btn-direct w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-brand-green/10 text-brand-green flex items-center justify-center hover:bg-brand-green hover:text-white transition-colors transform active:scale-90">
                                 <i data-lucide="plus" class="w-4 h-4 sm:w-5 sm:h-5"></i>
                             </button>
@@ -621,7 +618,7 @@
                         <img src="${item.image}" alt="${item.name}" loading="lazy" class="max-w-full max-h-full object-contain mix-blend-multiply">
                     </div>
                     <div class="flex-1 min-w-0">
-                        <h4 class="font-bold text-brand-dark text-sm leading-tight line-clamp-2" dangerouslySetInnerHTML>${item.name}</h4>
+                        <h4 class="font-bold text-brand-dark text-sm leading-tight line-clamp-2">${item.name}</h4>
                         <div class="text-brand-green font-bold text-sm mt-1">${formatCurrency(item.price)}</div>
                     </div>
                     <div class="flex flex-col items-center gap-2">
