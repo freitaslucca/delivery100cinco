@@ -281,7 +281,7 @@
                     <button type="submit" id="submitBtn" class="w-full mt-8 py-4 bg-brand-green hover:bg-emerald-500 text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl transform active:scale-95">
                         <i data-lucide="check-circle" class="w-5 h-5"></i>
                         <i data-lucide="loader-2" class="w-5 h-5 loader-icon"></i>
-                        Confirmar via WhatsApp
+                        Confirmar Pedido
                     </button>
                     
                     <p class="text-center text-xs text-gray-400 mt-4 flex items-center justify-center gap-1.5">
@@ -295,6 +295,50 @@
 
     <script>
         lucide.createIcons();
+
+        // Endpoint do backend de pedidos. Em produção o site é servido pelo próprio backend,
+        // então window.location.origin já aponta certo. Em dev (Live Server na 5500 etc),
+        // basta abrir o console e definir: window.PEDIDOS_API_BASE = 'http://localhost:3000'
+        const API_BASE = (window.PEDIDOS_API_BASE || window.location.origin).replace(/\/$/, '');
+        const WHATSAPP_FALLBACK = '5547999999999'; // <- TROCAR pelo número da loja (com 55 + DDD)
+
+        // ===== Tabela de frete por peso (Brusque/Guabiruba) =====
+        const FRETE_TIER_LIMITE_KG = 3;
+        const FRETE_ATE_LIMITE = 15.00;   // pedidos até 3kg
+        const FRETE_ACIMA_LIMITE = 10.00; // pedidos acima de 3kg
+
+        /**
+         * Extrai o peso em kg de cada produto a partir do quantityType.
+         * Exemplos suportados:
+         *   "10 unid. 100g"   → 10 × 100g = 1.0kg
+         *   "Pacote 1Kg"      → 1.0kg
+         *   "Balde 4 Kg"      → 4.0kg
+         *   "Pote 1,6 Kg"     → 1.6kg
+         *   "Pacote 1,02 Kg"  → 1.02kg
+         */
+        function parseWeightKg(quantityType) {
+            if (!quantityType) return 0;
+            const s = String(quantityType).toLowerCase();
+            // "X unid. Yg|kg"
+            const m1 = s.match(/(\d+)\s*unid\.?\s*(\d+(?:[.,]\d+)?)\s*(kg|g)\b/);
+            if (m1) {
+                const units = parseInt(m1[1], 10);
+                const per = parseFloat(m1[2].replace(',', '.'));
+                return units * (m1[3] === 'kg' ? per : per / 1000);
+            }
+            // "X kg" ou "X g" (pega o último ocorrendo, pra não pegar "10 unid")
+            const matches = [...s.matchAll(/(\d+(?:[.,]\d+)?)\s*(kg|g)\b/g)];
+            if (matches.length > 0) {
+                const last = matches[matches.length - 1];
+                const v = parseFloat(last[1].replace(',', '.'));
+                return last[2] === 'kg' ? v : v / 1000;
+            }
+            return 0;
+        }
+
+        function totalCartWeightKg() {
+            return cart.reduce((sum, item) => sum + parseWeightKg(item.quantityType) * item.quantity, 0);
+        }
 
         // Variáveis de Estado
         let cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -392,18 +436,30 @@
                 cart.splice(index, 1);
             }
             localStorage.setItem('cart', JSON.stringify(cart));
-            renderOrderSummary();
+            // Se a cidade já foi calculada, recalcula frete por peso
+            const cityVal = document.getElementById('city').value;
+            if (cityVal) updateDeliveryFee(cityVal);
+            else renderOrderSummary();
         };
 
-        // Regra de Frete (Com visual limpo)
+        // Regra de Frete (por peso): até 3kg = R$15, acima de 3kg = R$10
         function updateDeliveryFee(city) {
             const cityLower = city.toLowerCase().trim();
             deliveryFeeAlert.classList.remove('hidden');
 
             if (cityLower === 'brusque' || cityLower === 'guabiruba') {
-                deliveryFee = 7.00;
+                const pesoKg = totalCartWeightKg();
+                deliveryFee = pesoKg > FRETE_TIER_LIMITE_KG ? FRETE_ACIMA_LIMITE : FRETE_ATE_LIMITE;
                 isFeeCalculated = true;
-                deliveryFeeMessage.innerHTML = 'Frete calculado: <strong>R$ 7,00</strong> para sua região.';
+
+                const pesoFmt = pesoKg.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                if (pesoKg > FRETE_TIER_LIMITE_KG) {
+                    deliveryFeeMessage.innerHTML = `Peso do pedido: <strong>${pesoFmt}kg</strong> (acima de ${FRETE_TIER_LIMITE_KG}kg) — frete <strong>R$ ${FRETE_ACIMA_LIMITE.toFixed(2).replace('.', ',')}</strong>.`;
+                } else {
+                    const faltaParaDesconto = FRETE_TIER_LIMITE_KG - pesoKg;
+                    const faltaFmt = faltaParaDesconto.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 2 });
+                    deliveryFeeMessage.innerHTML = `Peso do pedido: <strong>${pesoFmt}kg</strong> — frete <strong>R$ ${FRETE_ATE_LIMITE.toFixed(2).replace('.', ',')}</strong>.<br>💡 Adicione mais <strong>${faltaFmt}kg</strong> para o frete cair para <strong>R$ ${FRETE_ACIMA_LIMITE.toFixed(2).replace('.', ',')}</strong>!`;
+                }
                 deliveryFeeDisplay.textContent = formatCurrency(deliveryFee);
                 deliveryFeeDisplay.classList.replace('text-brand-mango', 'text-brand-green');
             } else {
@@ -543,23 +599,46 @@
             const phone = document.getElementById('phone').value;
 
             const formattedDate = deliveryDate.split('-').reverse().join('/');
-            
+
             let subtotal = 0;
-            // Emoji na lista para ficar top no Telegram
+            cart.forEach(item => { subtotal += item.quantity * item.price; });
+            const finalTotal = subtotal + (isFeeCalculated ? deliveryFee : 0);
+
+            // ---------- Payload do backend (validado por Zod no servidor) ----------
+            const orderPayload = {
+                customer: {
+                    fullName,
+                    phone,
+                    cep,
+                    address,
+                    number,
+                    complement,
+                    city,
+                },
+                items: cart.map(item => ({
+                    productId: item.id ?? undefined,
+                    name: item.name,
+                    image: item.image,
+                    quantity: item.quantity,
+                    price: item.price,
+                })),
+                deliveryDate,
+                payment: paymentText,
+                deliveryFee: isFeeCalculated ? deliveryFee : 0,
+                deliveryFeeNote: isFeeCalculated ? '' : 'A combinar via WhatsApp',
+            };
+
+            // ---------- Fallback WhatsApp (caso o backend esteja fora) ----------
             const orderSummaryText = cart.map(item => {
                 const itemTotal = item.quantity * item.price;
-                subtotal += itemTotal;
                 return `▪️ ${item.quantity}x ${item.name} — ${formatCurrency(itemTotal)}`;
             }).join('\n');
-
-            const finalTotal = subtotal + (isFeeCalculated ? deliveryFee : 0);
             const feeText = isFeeCalculated ? formatCurrency(deliveryFee) : 'Combinar via WhatsApp';
-
-            const message = `
-🚨 *NOVO PEDIDO PELO SITE* 🚨
+            const whatsappMsg =
+`🚨 *NOVO PEDIDO PELO SITE* 🚨
 
 👤 *Cliente:* ${fullName}
-📱 *WhatsApp:* [${phone}](https://wa.me/55${phone.replace(/\D/g, '')})
+📱 *WhatsApp:* ${phone}
 
 📍 *Endereço de Entrega:*
 ${address}, ${number}
@@ -572,42 +651,50 @@ ${orderSummaryText}
 💳 *Forma de Pagamento:* ${paymentText}
 🚚 *Taxa de Entrega:* ${feeText}
 
-💰 *TOTAL DO PEDIDO:* *${formatCurrency(finalTotal)}*
-`;
-
-            // ⚠️ ALERTA DE SEGURANÇA: Mudar isso para Backend futuramente.
-            const telegramBotToken = '7771133074:AAHRznRkXHjBBdpfh6nrQbLymu6WwdzqrKg';
-            const telegramChatId = '-1002415622182';
-            const telegramUrl = `https://api.telegram.org/bot${telegramBotToken}/sendMessage`;
+💰 *TOTAL DO PEDIDO:* *${formatCurrency(finalTotal)}*`;
 
             try {
-                const response = await fetch(telegramUrl, {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 12000);
+                const response = await fetch(`${API_BASE}/api/orders`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        chat_id: telegramChatId,
-                        text: message,
-                        parse_mode: 'Markdown'
-                    })
+                    body: JSON.stringify(orderPayload),
+                    signal: controller.signal,
                 });
+                clearTimeout(timeout);
 
                 if (response.ok) {
                     localStorage.removeItem('cart');
-                    window.location.href = 'pedido-sucesso.html'; 
+                    window.location.href = 'pedido-sucesso.html';
+                    return;
+                }
+
+                const errData = await response.json().catch(() => ({}));
+                console.error('Erro do backend:', errData);
+                if (response.status === 400 && errData.details) {
+                    const firstField = Object.keys(errData.details)[0];
+                    const firstMsg = errData.details[firstField]?.[0] || 'Verifique os dados.';
+                    showToast(`Dados inválidos: ${firstMsg}`);
+                } else if (response.status === 429) {
+                    showToast('Aguarde um instante antes de enviar de novo.');
                 } else {
-                    const err = await response.json();
-                    console.error("Telegram API Error:", err);
-                    showToast("Erro de comunicação com o sistema. Tente contato via WhatsApp.");
-                    btn.classList.remove('btn-loading');
-                    btn.disabled = false;
+                    fallbackToWhatsapp(whatsappMsg);
                 }
             } catch (error) {
-                console.error('Erro de Fetch:', error);
-                showToast("Verifique sua conexão com a internet e tente novamente.");
-                btn.classList.remove('btn-loading');
-                btn.disabled = false;
+                console.error('Falha ao enviar pedido:', error);
+                fallbackToWhatsapp(whatsappMsg);
             }
+
+            btn.classList.remove('btn-loading');
+            btn.disabled = false;
         });
+
+        function fallbackToWhatsapp(message) {
+            showToast('Servidor indisponível. Abrindo WhatsApp para envio manual...', 'info');
+            const url = `https://wa.me/${WHATSAPP_FALLBACK}?text=${encodeURIComponent(message)}`;
+            setTimeout(() => window.open(url, '_blank'), 800);
+        }
 
         // Inicializar
         loadCustomerData();
