@@ -1,0 +1,10 @@
+node_modules
+.DS_Store
+.env
+.env.local
+.env.production
+*.log
+dist
+.vscode/settings.local.json
+.vercel
+
