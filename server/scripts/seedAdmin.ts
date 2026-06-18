@@ -13,8 +13,8 @@ async function run(): Promise<void> {
     console.error('❌ Defina ADMIN_USERNAME e ADMIN_PASSWORD no .env antes de rodar o seed.');
     process.exit(1);
   }
-  if (password.length < 8) {
-    console.error('❌ A senha de admin precisa ter pelo menos 8 caracteres.');
+  if (password.length < 6) {
+    console.error('❌ A senha de admin precisa ter pelo menos 6 caracteres.');
     process.exit(1);
   }
 

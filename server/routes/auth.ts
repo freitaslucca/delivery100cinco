@@ -23,7 +23,6 @@ authRouter.post('/login', loginLimiter, validate(loginSchema), async (req, res) 
 
   const admin = await Admin.findOne({ username }).lean();
   if (!admin) {
-    await bcrypt.compare(password, '$2a$10$invalidsaltinvalidsaltinvali.dummyDummyDummyDummyDummyDu');
     return res.status(401).json({ error: 'Usuário ou senha inválidos' });
   }
 
