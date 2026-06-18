@@ -1,0 +1,34 @@
+{
+  "name": "100 Cinco — Painel de Pedidos",
+  "short_name": "100 Cinco",
+  "description": "Painel de pedidos em tempo real da 100 Cinco Distribuidora",
+  "start_url": "/pedidos.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8FAF9",
+  "theme_color": "#10B981",
+  "lang": "pt-BR",
+  "categories": ["business", "productivity", "food"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2310B981'/><stop offset='100%25' stop-color='%23047857'/></linearGradient></defs><rect width='192' height='192' rx='40' fill='url(%23g)'/><text x='96' y='128' font-family='system-ui,sans-serif' font-size='86' font-weight='900' fill='%23fff' text-anchor='middle'>105</text></svg>",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><defs><linearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'><stop offset='0%25' stop-color='%2310B981'/><stop offset='100%25' stop-color='%23047857'/></linearGradient></defs><rect width='512' height='512' rx='100' fill='url(%23g)'/><text x='256' y='340' font-family='system-ui,sans-serif' font-size='220' font-weight='900' fill='%23fff' text-anchor='middle'>105</text></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Novos pedidos",
+      "url": "/pedidos.html#novos",
+      "icons": [{ "src": "/assets/favicon.png", "sizes": "96x96" }]
+    }
+  ]
+}

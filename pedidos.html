@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Painel de Pedidos | 100 Cinco</title>
+
+    <!-- PWA -->
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta name="theme-color" content="#10B981">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="100 Cinco">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='180' height='180' rx='36' fill='url(%23g)'/%3E%3Ctext x='90' y='120' font-family='system-ui,sans-serif' font-size='80' font-weight='900' fill='%23fff' text-anchor='middle'%3E105%3C/text%3E%3C/svg%3E">
+
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2310B981'/%3E%3Cstop offset='100%25' stop-color='%23047857'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='url(%23g)'/%3E%3Ctext x='50' y='68' font-family='system-ui, sans-serif' font-size='46' font-weight='900' fill='%23fff' text-anchor='middle'%3E105%3C/text%3E%3C/svg%3E" type="image/svg+xml">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@300;400;500;700;800;900&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Outfit', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            bg: '#F8FAF9', dark: '#0A2517', text: '#4B5563',
+                            green: '#10B981', mango: '#F59E0B', berry: '#E11D48',
+                            acai: '#4C1D95', sky: '#0EA5E9'
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(10, 37, 23, 0.08)',
+                        'float': '0 30px 60px -20px rgba(10, 37, 23, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+
+    <style>
+        body {
+            background-color: #F8FAF9; color: #4B5563; font-family: 'Inter', sans-serif;
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; }
+
+        .glass-header {
+            background: rgba(248, 250, 249, 0.92);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.12);
+        }
+
+        .input-field {
+            width: 100%; padding: 0.875rem 1rem; background-color: #fff;
+            border: 1px solid #E5E7EB; border-radius: 0.75rem; font-size: 0.9rem;
+            color: #0A2517; transition: all 0.2s; outline: none;
+        }
+        .input-field:focus {
+            border-color: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,0.1);
+        }
+        .input-sm {
+            padding: 0.5rem 0.75rem; font-size: 0.8rem; border-radius: 0.5rem;
+        }
+
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5); }
+            70% { box-shadow: 0 0 0 14px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+        .pulse-new { animation: pulseRing 1.6s ease-out infinite; }
+
+        @keyframes slideInTop {
+            from { opacity: 0; transform: translateY(-12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .card-enter { animation: slideInTop 0.45s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning { animation: spin 1s linear infinite; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.25rem 0.625rem; border-radius: 999px; font-size: 0.7rem;
+            font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+        }
+        .status-dot { width: 6px; height: 6px; border-radius: 999px; display: inline-block; }
+        .status-novo { background: rgba(16,185,129,0.1); color: #047857; }
+        .status-novo .status-dot { background: #10B981; animation: pulseRing 1.6s ease-out infinite; }
+        .status-em_preparo { background: rgba(245,158,11,0.12); color: #B45309; }
+        .status-em_preparo .status-dot { background: #F59E0B; }
+        .status-saiu_para_entrega { background: rgba(14,165,233,0.12); color: #0369A1; }
+        .status-saiu_para_entrega .status-dot { background: #0EA5E9; }
+        .status-entregue { background: rgba(76,29,149,0.10); color: #4C1D95; }
+        .status-entregue .status-dot { background: #4C1D95; }
+        .status-cancelado { background: rgba(225,29,72,0.10); color: #BE123C; }
+        .status-cancelado .status-dot { background: #E11D48; }
+
+        .filter-tab {
+            white-space: nowrap; padding: 0.5rem 1rem; border-radius: 999px;
+            font-size: 0.8rem; font-weight: 700; background: #fff; color: #4B5563;
+            border: 1px solid #E5E7EB; cursor: pointer; transition: all 0.2s;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+        }
+        .filter-tab:hover { border-color: #10B981; color: #10B981; }
+        .filter-tab.active { background: #0A2517; color: #fff; border-color: #0A2517; }
+        .filter-tab.active .tab-count { background: #10B981; color: #fff; }
+        .tab-count {
+            background: #F3F4F6; color: #6B7280; padding: 0.05rem 0.45rem;
+            border-radius: 999px; font-size: 0.65rem; min-width: 1.25rem; text-align: center;
+        }
+
+        .nav-tab {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.85rem;
+            font-weight: 700; color: #4B5563; cursor: pointer; transition: all 0.15s;
+            background: transparent; border: none;
+        }
+        .nav-tab:hover { background: rgba(16,185,129,0.08); color: #047857; }
+        .nav-tab.active { background: #0A2517; color: #fff; }
+
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .btn-action {
+            display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+            padding: 0.55rem 0.875rem; border-radius: 0.625rem; font-size: 0.78rem;
+            font-weight: 700; transition: all 0.15s; cursor: pointer; border: 1px solid transparent;
+        }
+        .btn-action:active { transform: scale(0.96); }
+        .btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-primary { background: #10B981; color: #fff; }
+        .btn-primary:hover { background: #059669; }
+        .btn-mango { background: #F59E0B; color: #fff; }
+        .btn-mango:hover { background: #D97706; }
+        .btn-sky { background: #0EA5E9; color: #fff; }
+        .btn-sky:hover { background: #0284C7; }
+        .btn-acai { background: #4C1D95; color: #fff; }
+        .btn-acai:hover { background: #3B0F73; }
+        .btn-danger { background: #fff; color: #BE123C; border-color: #FECDD3; }
+        .btn-danger:hover { background: #FFF1F2; border-color: #FB7185; }
+        .btn-ghost { background: #fff; color: #4B5563; border-color: #E5E7EB; }
+        .btn-ghost:hover { background: #F9FAFB; }
+        .btn-dark { background: #0A2517; color: #fff; }
+        .btn-dark:hover { background: #000; }
+
+        .connection-dot {
+            width: 8px; height: 8px; border-radius: 999px; display: inline-block;
+            transition: background 0.3s;
+        }
+        .connection-dot.online { background: #10B981; box-shadow: 0 0 0 4px rgba(16,185,129,0.15); }
+        .connection-dot.offline { background: #E11D48; box-shadow: 0 0 0 4px rgba(225,29,72,0.15); }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-8deg); }
+            75% { transform: rotate(8deg); }
+        }
+        .wiggle { animation: wiggle 0.6s ease-in-out 3; }
+
+        .period-btn {
+            padding: 0.4rem 0.75rem; border-radius: 0.5rem; font-size: 0.75rem;
+            font-weight: 700; background: #fff; color: #4B5563; border: 1px solid #E5E7EB;
+            cursor: pointer; transition: all 0.15s; white-space: nowrap;
+        }
+        .period-btn:hover { border-color: #10B981; color: #10B981; }
+        .period-btn.active { background: #0A2517; color: #fff; border-color: #0A2517; }
+
+        .stat-card {
+            background: #fff; border: 1px solid #F3F4F6; border-radius: 1rem;
+            padding: 1.25rem; position: relative; overflow: hidden;
+        }
+        .stat-card-label {
+            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.06em; color: #6B7280;
+        }
+        .stat-card-value {
+            font-family: 'Outfit', sans-serif; font-weight: 900;
+            font-size: 1.75rem; line-height: 1; margin-top: 0.5rem;
+        }
+
+        .hidden-soft { display: none !important; }
+
+        /* =================== PRINT (Comanda) =================== */
+        @media print {
+            body * { visibility: hidden !important; }
+            #printArea, #printArea * { visibility: visible !important; }
+            #printArea {
+                position: absolute !important; left: 0; top: 0; width: 100%;
+                background: #fff; padding: 0; margin: 0;
+            }
+            @page { margin: 12mm; }
+        }
+        #printArea { display: none; }
+        body.printing #printArea { display: block; }
+
+        .print-comanda {
+            font-family: 'Inter', sans-serif; color: #0A2517; max-width: 800px; margin: 0 auto;
+        }
+        .print-comanda h1 { font-family: 'Outfit', sans-serif; font-weight: 900; }
+        .print-comanda .pc-header {
+            border-bottom: 3px solid #10B981; padding-bottom: 12px; margin-bottom: 16px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+        .print-comanda .pc-section { margin-top: 14px; padding-top: 10px; border-top: 1px dashed #ccc; }
+        .print-comanda .pc-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: #6B7280; }
+        .print-comanda .pc-big-address { font-size: 14px; font-weight: 700; line-height: 1.4; }
+        .print-comanda table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+        .print-comanda th { text-align: left; background: #F3F4F6; padding: 6px; font-size: 10px; text-transform: uppercase; }
+        .print-comanda td { padding: 6px; border-bottom: 1px solid #F3F4F6; }
+        .print-comanda .pc-total {
+            background: #0A2517; color: #fff; padding: 12px; margin-top: 14px;
+            border-radius: 8px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .print-comanda .pc-total-value { font-family: 'Outfit', sans-serif; font-weight: 900; font-size: 22px; color: #10B981; }
+        .print-comanda .pc-footer { margin-top: 16px; font-size: 10px; color: #888; text-align: center; }
+    </style>
+</head>
+<body class="antialiased pb-24">
+
+    <!-- =================== TOAST =================== -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm"></div>
+
+    <!-- =================== LOGIN =================== -->
+    <section id="loginScreen" class="fixed inset-0 z-50 bg-brand-bg flex items-center justify-center p-4">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute -top-20 -right-20 w-96 h-96 bg-brand-green/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-20 w-96 h-96 bg-brand-acai/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="relative w-full max-w-md bg-white rounded-[2rem] shadow-float border border-gray-100 p-8 sm:p-10">
+            <div class="flex flex-col items-center mb-8">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-brand-green to-emerald-700 flex items-center justify-center shadow-lg shadow-brand-green/30 mb-4">
+                    <span class="font-display font-black text-white text-2xl">105</span>
+                </div>
+                <h1 class="font-display font-black text-2xl text-brand-dark tracking-tight">Painel de Pedidos</h1>
+                <p class="text-brand-text text-sm mt-1">100 Cinco Distribuidora</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="loginUser" class="block text-xs font-bold text-brand-text mb-1.5 uppercase tracking-wider">Usuário</label>
+                    <input type="text" id="loginUser" required autocomplete="username" placeholder="admin" class="input-field">
+                </div>
+                <div>
+                    <label for="loginPass" class="block text-xs font-bold text-brand-text mb-1.5 uppercase tracking-wider">Senha</label>
+                    <input type="password" id="loginPass" required autocomplete="current-password" placeholder="••••••••" class="input-field">
+                </div>
+
+                <div id="loginError" class="hidden-soft text-sm text-brand-berry bg-rose-50 border border-rose-200 rounded-xl px-4 py-3 flex items-start gap-2">
+                    <i data-lucide="alert-circle" class="w-4 h-4 mt-0.5 flex-shrink-0"></i>
+                    <span id="loginErrorMsg"></span>
+                </div>
+
+                <button type="submit" id="loginBtn" class="w-full py-3.5 mt-2 bg-brand-dark hover:bg-black text-white rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-lg active:scale-95">
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                    <span>Entrar no Painel</span>
+                </button>
+            </form>
+
+            <p class="text-center text-xs text-gray-400 mt-6 flex items-center justify-center gap-1.5">
+                <i data-lucide="shield-check" class="w-3 h-3"></i> Conexão criptografada
+            </p>
+        </div>
+    </section>
+
+    <!-- =================== DASHBOARD =================== -->
+    <main id="dashboard" class="hidden-soft">
+
+        <!-- HEADER -->
+        <header class="sticky top-0 w-full z-40 glass-header py-3 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-green to-emerald-700 flex items-center justify-center shadow-md shadow-brand-green/20 flex-shrink-0">
+                        <span class="font-display font-black text-white text-base">105</span>
+                    </div>
+                    <div class="flex-col leading-none hidden sm:flex">
+                        <span class="font-display font-black text-base text-brand-dark tracking-tight">100 Cinco</span>
+                        <span class="text-[10px] font-bold text-brand-green uppercase tracking-widest">Painel</span>
+                    </div>
+                </div>
+
+                <nav class="flex items-center gap-1 flex-1 justify-center max-w-md">
+                    <button class="nav-tab active" data-view="dashboard" id="navDashboard">
+                        <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Dashboard</span>
+                    </button>
+                    <button class="nav-tab" data-view="orders" id="navOrders">
+                        <i data-lucide="package" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Pedidos</span>
+                        <span id="navOrdersBadge" class="bg-brand-green text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center hidden-soft">0</span>
+                    </button>
+                    <button class="nav-tab" data-view="customers" id="navCustomers">
+                        <i data-lucide="users" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Clientes</span>
+                    </button>
+                </nav>
+
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <div id="connectionStatus" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white rounded-full border border-gray-200 text-xs font-bold text-gray-600">
+                        <span class="connection-dot offline" id="connectionDot"></span>
+                        <span id="connectionText">Conectando...</span>
+                    </div>
+                    <button id="soundToggle" title="Som" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
+                        <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4"></i>
+                    </button>
+                    <button id="notifyToggle" title="Notificações push" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
+                        <i data-lucide="bell" id="bellIcon" class="w-4 h-4"></i>
+                    </button>
+                    <button id="logoutBtn" title="Sair" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-berry hover:bg-rose-50 hover:border-rose-200 transition-colors">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- BANNER: Push subscription hint -->
+        <div id="pushBanner" class="hidden-soft bg-brand-mango/10 border-b border-brand-mango/30 text-sm">
+            <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-brand-mango font-medium min-w-0">
+                    <i data-lucide="bell-ring" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-xs sm:text-sm">Ative as notificações pra receber pedidos mesmo com o app fechado</span>
+                </div>
+                <button id="enablePushBtn" class="btn-action btn-mango">
+                    <i data-lucide="bell" class="w-3.5 h-3.5"></i>Ativar
+                </button>
+            </div>
+        </div>
+
+        <!-- BANNER: Install PWA -->
+        <div id="installBanner" class="hidden-soft bg-brand-sky/10 border-b border-brand-sky/30 text-sm">
+            <div class="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
+                <div class="flex items-center gap-2 text-brand-sky font-medium min-w-0">
+                    <i data-lucide="download" class="w-4 h-4 flex-shrink-0"></i>
+                    <span class="text-xs sm:text-sm">Instale o painel no celular pra abrir como um app</span>
+                </div>
+                <button id="installBtn" class="btn-action btn-sky">
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>Instalar
+                </button>
+            </div>
+        </div>
+
+        <!-- ============ PERIOD SELECTOR (compartilhado) ============ -->
+        <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+            <div class="bg-white border border-gray-100 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex items-center gap-2 flex-shrink-0">
+                    <i data-lucide="calendar-days" class="w-4 h-4 text-brand-green"></i>
+                    <span class="font-bold text-xs uppercase tracking-wider text-brand-text">Período:</span>
+                </div>
+                <div class="flex gap-2 overflow-x-auto hide-scrollbar flex-1 -mx-1 px-1">
+                    <button class="period-btn active" data-period="today">Hoje</button>
+                    <button class="period-btn" data-period="yesterday">Ontem</button>
+                    <button class="period-btn" data-period="7d">Últimos 7 dias</button>
+                    <button class="period-btn" data-period="30d">Últimos 30 dias</button>
+                    <button class="period-btn" data-period="month">Este mês</button>
+                    <button class="period-btn" data-period="custom">Personalizado</button>
+                </div>
+                <div id="customDateRange" class="hidden-soft flex items-center gap-2">
+                    <input type="date" id="dateFrom" class="input-field input-sm" style="width: auto;">
+                    <span class="text-xs text-gray-400">até</span>
+                    <input type="date" id="dateTo" class="input-field input-sm" style="width: auto;">
+                    <button id="applyCustomDate" class="btn-action btn-primary">Aplicar</button>
+                </div>
+                <span id="periodLabel" class="text-xs text-gray-500 font-medium sm:ml-auto whitespace-nowrap"></span>
+            </div>
+        </section>
+
+        <!-- ============ VIEW: DASHBOARD ============ -->
+        <section id="viewDashboard" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12">
+
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Dashboard</h2>
+                    <p class="text-sm text-brand-text mt-1">Visão geral do período selecionado.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="printDashboardBtn" class="btn-action btn-ghost">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>Imprimir relatório
+                    </button>
+                    <button id="exportStatsCsvBtn" class="btn-action btn-dark">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>Exportar CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-6">
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Total de Pedidos</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-green/10 text-brand-green flex items-center justify-center">
+                            <i data-lucide="package" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-dark" id="kpiTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Faturamento</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-mango/10 text-brand-mango flex items-center justify-center">
+                            <i data-lucide="banknote" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-mango" id="kpiRevenue">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Ticket Médio</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-sky/10 text-brand-sky flex items-center justify-center">
+                            <i data-lucide="trending-up" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-sky" id="kpiAvg">R$ 0,00</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Em Aberto</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-acai/10 text-brand-acai flex items-center justify-center">
+                            <i data-lucide="loader" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-acai" id="kpiOpen">0</div>
+                </div>
+            </div>
+
+            <!-- Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6">
+                <div class="lg:col-span-2 bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+                    <h3 class="font-display font-bold text-brand-dark text-base mb-1">Pedidos por dia</h3>
+                    <p class="text-xs text-gray-500 mb-4">Quantidade e faturamento no período</p>
+                    <div class="h-64 sm:h-72">
+                        <canvas id="chartSeries"></canvas>
+                    </div>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+                    <h3 class="font-display font-bold text-brand-dark text-base mb-1">Por status</h3>
+                    <p class="text-xs text-gray-500 mb-4">Distribuição atual</p>
+                    <div class="h-64">
+                        <canvas id="chartStatus"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+                    <h3 class="font-display font-bold text-brand-dark text-base mb-3">Top produtos</h3>
+                    <div id="topProducts" class="space-y-2.5">
+                        <div class="text-sm text-gray-400 text-center py-8">Nenhum pedido no período.</div>
+                    </div>
+                </div>
+                <div class="bg-white border border-gray-100 rounded-2xl p-4 sm:p-5 shadow-sm">
+                    <h3 class="font-display font-bold text-brand-dark text-base mb-3">Top cidades</h3>
+                    <div id="topCities" class="space-y-2.5">
+                        <div class="text-sm text-gray-400 text-center py-8">Nenhum pedido no período.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ============ VIEW: ORDERS ============ -->
+        <section id="viewOrders" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12 hidden-soft">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Pedidos</h2>
+                    <p class="text-sm text-brand-text mt-1">Atualize status, imprima comandas e exporte para a expedição.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="exportOrdersCsvBtn" class="btn-action btn-ghost">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>Exportar pedidos (CSV)
+                    </button>
+                    <button id="printOrdersListBtn" class="btn-action btn-dark">
+                        <i data-lucide="printer" class="w-3.5 h-3.5"></i>Imprimir lista
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-4 relative">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                <input id="searchInput" type="search" placeholder="Buscar por nome ou telefone..."
+                    class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all text-sm">
+            </div>
+
+            <div class="flex gap-2 overflow-x-auto pb-2 mb-2 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                <button class="filter-tab active" data-filter="all">
+                    <i data-lucide="layers" class="w-3 h-3"></i> Todos
+                    <span class="tab-count" id="count-all">0</span>
+                </button>
+                <button class="filter-tab" data-filter="novo">
+                    <i data-lucide="sparkles" class="w-3 h-3"></i> Novos
+                    <span class="tab-count" id="count-novo">0</span>
+                </button>
+                <button class="filter-tab" data-filter="em_preparo">
+                    <i data-lucide="chef-hat" class="w-3 h-3"></i> Em Preparo
+                    <span class="tab-count" id="count-em_preparo">0</span>
+                </button>
+                <button class="filter-tab" data-filter="saiu_para_entrega">
+                    <i data-lucide="bike" class="w-3 h-3"></i> Saiu
+                    <span class="tab-count" id="count-saiu_para_entrega">0</span>
+                </button>
+                <button class="filter-tab" data-filter="entregue">
+                    <i data-lucide="check-circle-2" class="w-3 h-3"></i> Entregues
+                    <span class="tab-count" id="count-entregue">0</span>
+                </button>
+                <button class="filter-tab" data-filter="cancelado">
+                    <i data-lucide="x-circle" class="w-3 h-3"></i> Cancelados
+                    <span class="tab-count" id="count-cancelado">0</span>
+                </button>
+            </div>
+
+            <div id="emptyState" class="hidden-soft text-center py-20">
+                <div class="w-20 h-20 mx-auto bg-brand-green/10 rounded-2xl flex items-center justify-center mb-4">
+                    <i data-lucide="inbox" class="w-10 h-10 text-brand-green"></i>
+                </div>
+                <h3 class="font-display font-bold text-lg text-brand-dark mb-1">Nenhum pedido aqui</h3>
+                <p class="text-sm text-brand-text">Ajuste o período ou aguarde novos pedidos.</p>
+            </div>
+
+            <div id="loadingState" class="text-center py-20">
+                <i data-lucide="loader-2" class="w-8 h-8 text-brand-green mx-auto spinning"></i>
+                <p class="text-sm text-brand-text mt-3">Carregando pedidos...</p>
+            </div>
+
+            <div id="ordersList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ============ VIEW: CUSTOMERS ============ -->
+        <section id="viewCustomers" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12 hidden-soft">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Clientes</h2>
+                    <p class="text-sm text-brand-text mt-1">Base de clientes cadastrados automaticamente a cada pedido.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="exportCustomersCsvBtn" class="btn-action btn-ghost">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>Exportar CSV
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs Clientes -->
+            <div class="grid grid-cols-3 gap-3 sm:gap-4 mb-5">
+                <div class="stat-card">
+                    <div class="stat-card-label">Total Clientes</div>
+                    <div class="stat-card-value text-brand-dark" id="kpiCustomerTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Recorrentes</div>
+                    <div class="stat-card-value text-brand-green" id="kpiCustomerRepeat">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-label">Faturado Total</div>
+                    <div class="stat-card-value text-brand-mango" id="kpiCustomerSpent">R$ 0</div>
+                </div>
+            </div>
+
+            <!-- Controles -->
+            <div class="flex flex-col sm:flex-row gap-3 mb-4">
+                <div class="flex-1 relative">
+                    <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                    <input id="customerSearch" type="search" placeholder="Buscar por nome ou telefone..."
+                        class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all text-sm">
+                </div>
+                <select id="customerSort" class="input-field" style="max-width: 220px;">
+                    <option value="lastOrderAt">Último pedido</option>
+                    <option value="totalSpent">Maior gasto</option>
+                    <option value="totalOrders">Mais pedidos</option>
+                    <option value="fullName">Nome (A-Z)</option>
+                </select>
+            </div>
+
+            <div id="customersEmpty" class="hidden-soft text-center py-20">
+                <div class="w-20 h-20 mx-auto bg-brand-green/10 rounded-2xl flex items-center justify-center mb-4">
+                    <i data-lucide="users" class="w-10 h-10 text-brand-green"></i>
+                </div>
+                <h3 class="font-display font-bold text-lg text-brand-dark mb-1">Nenhum cliente ainda</h3>
+                <p class="text-sm text-brand-text">Os clientes são cadastrados automaticamente a cada novo pedido.</p>
+            </div>
+
+            <div id="customersLoading" class="text-center py-20 hidden-soft">
+                <i data-lucide="loader-2" class="w-8 h-8 text-brand-green mx-auto spinning"></i>
+            </div>
+
+            <div id="customersList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
+        </section>
+    </main>
+
+    <!-- =================== CUSTOMER MODAL =================== -->
+    <div id="customerModal" class="fixed inset-0 z-50 hidden-soft">
+        <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="customerModalBackdrop"></div>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-6">
+            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
+                    <h3 class="font-display font-black text-lg text-brand-dark">Cliente</h3>
+                    <button onclick="closeCustomerModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="customerModalBody" class="overflow-y-auto p-5 flex-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================== ORDER DETAIL MODAL =================== -->
+    <div id="orderModal" class="fixed inset-0 z-50 hidden-soft">
+        <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="modalBackdrop"></div>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-6">
+            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-lg w-full max-h-[92vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
+                    <h3 class="font-display font-black text-lg text-brand-dark">Detalhes do Pedido</h3>
+                    <button onclick="closeOrderModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="modalBody" class="overflow-y-auto p-5 flex-1"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================== PRINT AREA (Comanda / Lista) =================== -->
+    <div id="printArea"></div>
+
+    <script src="src/pedidos.js"></script>
+</body>
+</html>
