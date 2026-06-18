@@ -12,8 +12,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server/server.js",
     "seed:admin": "tsx server/scripts/seedAdmin.ts",
-    "seed:admin:prod": "node dist/server/scripts/seedAdmin.js",
-    "vercel-build": "tsc -p tsconfig.json"
+    "seed:admin:prod": "node dist/server/scripts/seedAdmin.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
