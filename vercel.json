@@ -5,7 +5,7 @@
   "outputDirectory": ".",
   "installCommand": "npm install --include=dev",
   "functions": {
-    "api/[...path].ts": {
+    "api/[[...path]].ts": {
       "maxDuration": 30,
       "memory": 1024
     }
