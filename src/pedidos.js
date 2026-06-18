@@ -14,6 +14,11 @@
     const POLL_INTERVAL_HIDDEN_MS = 15000;
     const STATS_REFRESH_MS = 20000;
 
+    // Detecta iOS e modo standalone (PWA instalado)
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches ||
+                         (window.navigator.standalone === true);
+
     // ---------- State ----------
     const state = {
         token: localStorage.getItem(TOKEN_KEY) || null,
@@ -169,8 +174,16 @@
     }
 
     async function subscribePush() {
+        if (isIOS && !isStandalone) {
+            showIOSInstallInstructions();
+            return false;
+        }
         if (!('PushManager' in window) || !swRegistration) {
             showToast('Seu navegador não suporta push notifications.', 'error');
+            return false;
+        }
+        if (!('Notification' in window)) {
+            showToast('Seu navegador não suporta notificações.', 'error');
             return false;
         }
         const perm = await Notification.requestPermission();
@@ -230,7 +243,16 @@
     }
 
     async function checkPushBanner() {
-        if (!('Notification' in window) || !('PushManager' in window)) return;
+        // iOS Safari fora do modo standalone: nem mostra banner de push,
+        // mostra o de Install pro usuário primeiro instalar como PWA.
+        if (isIOS && !isStandalone) {
+            $('pushBanner').classList.add('hidden-soft');
+            return;
+        }
+        if (!('Notification' in window) || !('PushManager' in window)) {
+            $('pushBanner').classList.add('hidden-soft');
+            return;
+        }
         const sub = await getPushSubscription();
         state.pushSubscribed = !!sub && Notification.permission === 'granted';
         if (state.pushSubscribed) {
@@ -247,13 +269,88 @@
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         state.pwaInstallPrompt = e;
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
         if (!isStandalone) $('installBanner').classList.remove('hidden-soft');
     });
     window.addEventListener('appinstalled', () => {
         $('installBanner').classList.add('hidden-soft');
         showToast('App instalado!', 'success');
     });
+
+    // iOS Safari não dispara beforeinstallprompt — mostra banner manualmente
+    function setupIOSInstallBanner() {
+        if (isIOS && !isStandalone) {
+            const banner = $('installBanner');
+            const btn = $('installBtn');
+            if (banner) {
+                banner.querySelector('span').textContent = 'No iPhone: toque em Compartilhar → "Adicionar à Tela de Início"';
+                banner.classList.remove('hidden-soft');
+            }
+            if (btn) {
+                btn.innerHTML = '<i data-lucide="info" class="w-3.5 h-3.5"></i>Ver como';
+                btn.onclick = (e) => { e.preventDefault(); showIOSInstallInstructions(); };
+            }
+        }
+    }
+
+    function showIOSInstallInstructions() {
+        // Reaproveita o modal de pedido pra mostrar instruções
+        const modal = $('orderModal');
+        const body = $('modalBody');
+        if (!modal || !body) {
+            showToast('No iPhone: Compartilhar → "Adicionar à Tela de Início", depois abre pelo ícone.', 'info');
+            return;
+        }
+        body.innerHTML = `
+            <div class="space-y-5 text-sm">
+                <div class="bg-brand-sky/10 border border-brand-sky/20 rounded-2xl p-4">
+                    <h4 class="font-display font-bold text-brand-dark text-base mb-2 flex items-center gap-2">
+                        <i data-lucide="smartphone" class="w-5 h-5 text-brand-sky"></i>
+                        Notificações no iPhone
+                    </h4>
+                    <p class="text-gray-600 leading-relaxed">
+                        O Safari do iPhone só ativa notificações push depois que você instala o painel como app na tela inicial. É rápido, vou te guiar:
+                    </p>
+                </div>
+
+                <ol class="space-y-3">
+                    <li class="flex gap-3 items-start">
+                        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-brand-green text-white font-bold flex items-center justify-center text-sm">1</span>
+                        <div>
+                            <strong class="text-brand-dark">Abra o menu Compartilhar</strong>
+                            <p class="text-gray-500 text-xs mt-0.5">Toque no botão <i data-lucide="share" class="inline w-3 h-3 align-baseline"></i> (quadrado com seta pra cima) na barra inferior do Safari.</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-brand-green text-white font-bold flex items-center justify-center text-sm">2</span>
+                        <div>
+                            <strong class="text-brand-dark">"Adicionar à Tela de Início"</strong>
+                            <p class="text-gray-500 text-xs mt-0.5">Role o menu até achar a opção (pode estar como "Add to Home Screen"). Toque nela.</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-brand-green text-white font-bold flex items-center justify-center text-sm">3</span>
+                        <div>
+                            <strong class="text-brand-dark">Confirme "Adicionar"</strong>
+                            <p class="text-gray-500 text-xs mt-0.5">Vai aparecer o ícone "100 Cinco" na sua tela inicial.</p>
+                        </div>
+                    </li>
+                    <li class="flex gap-3 items-start">
+                        <span class="flex-shrink-0 w-7 h-7 rounded-full bg-brand-green text-white font-bold flex items-center justify-center text-sm">4</span>
+                        <div>
+                            <strong class="text-brand-dark">Abra pelo ícone (NÃO pelo Safari)</strong>
+                            <p class="text-gray-500 text-xs mt-0.5">Faça login de novo e toque no sino <i data-lucide="bell" class="inline w-3 h-3 align-baseline"></i> pra ativar notificações.</p>
+                        </div>
+                    </li>
+                </ol>
+
+                <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-xs text-yellow-800">
+                    <strong>Importante:</strong> precisa ser iOS 16.4 ou superior. Confira em Ajustes → Geral → Sobre.
+                </div>
+            </div>
+        `;
+        modal.classList.remove('hidden-soft');
+        if (window.lucide) lucide.createIcons();
+    }
 
     // ---------- Auth ----------
     function showLogin() {
@@ -1470,6 +1567,7 @@
             setPeriod(state.period.preset);
             startPolling();
             checkPushBanner();
+            setupIOSInstallBanner();
         } else {
             showLogin();
         }
