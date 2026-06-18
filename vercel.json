@@ -4,11 +4,8 @@
   "buildCommand": "echo '✅ Skip build - serverless functions transpilam TS automaticamente'",
   "outputDirectory": ".",
   "installCommand": "npm install --include=dev",
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" }
-  ],
   "functions": {
-    "api/index.ts": {
+    "api/[...path].ts": {
       "maxDuration": 30,
       "memory": 1024
     }
