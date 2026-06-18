@@ -634,7 +634,7 @@
 
                     <div>
                         <div class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">Anotações internas</div>
-                        <textarea id="customerNotes" class="input-field" rows="3" placeholder="Ex.: prefere entrega à tarde, não comer sair lácteos...">${escapeHtml(c.notes || '')}</textarea>
+                        <textarea id="customerNotes" class="input-field" rows="3" placeholder="Ex.: prefere entrega à tarde, não come lácteos, deixar com o porteiro...">${escapeHtml(c.notes || '')}</textarea>
                         <button onclick="window.saveCustomerNotes('${c._id}')" class="btn-action btn-primary mt-2 w-full">
                             <i data-lucide="save" class="w-3.5 h-3.5"></i>Salvar anotações
                         </button>
