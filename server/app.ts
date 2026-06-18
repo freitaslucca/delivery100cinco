@@ -40,8 +40,13 @@ export function buildApp(): Express {
     })
   );
 
-  app.use(express.json({ limit: '512kb' }));
-  app.use(express.urlencoded({ extended: true, limit: '512kb' }));
+  // Na Vercel, o runtime já parsea o body automaticamente (process.env.VERCEL=1).
+  // Se chamarmos express.json() aqui, o body-parser fica esperando ler o stream
+  // que já foi consumido → request trava até o timeout de 30s da função.
+  if (!process.env.VERCEL) {
+    app.use(express.json({ limit: '512kb' }));
+    app.use(express.urlencoded({ extended: true, limit: '512kb' }));
+  }
   app.use(pinoHttp({ logger, autoLogging: { ignore: (req) => req.url === '/api/health' } }));
 
   const apiLimiter = rateLimit({
