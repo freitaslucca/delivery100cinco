@@ -12,7 +12,9 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server/server.js",
     "seed:admin": "tsx server/scripts/seedAdmin.ts",
-    "seed:admin:prod": "node dist/server/scripts/seedAdmin.js"
+    "seed:admin:prod": "node dist/server/scripts/seedAdmin.js",
+    "seed:products": "tsx server/scripts/seedProducts.ts",
+    "seed:products:prod": "node dist/server/scripts/seedProducts.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
