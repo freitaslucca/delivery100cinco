@@ -12,6 +12,7 @@ import { authRouter } from './routes/auth.js';
 import { ordersRouter } from './routes/orders.js';
 import { pushRouter } from './routes/push.js';
 import { customersRouter } from './routes/customers.js';
+import { productsRouter } from './routes/products.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -65,6 +66,7 @@ export function buildApp(): Express {
   app.use('/api/orders', ordersRouter);
   app.use('/api/push', pushRouter);
   app.use('/api/customers', customersRouter);
+  app.use('/api/products', productsRouter);
 
   if (config.SERVE_STATIC) {
     app.use(

@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { Order, ORDER_STATUSES, type OrderStatus } from '../models/Order.js';
+import { Product } from '../models/Product.js';
 import {
   createOrderSchema,
   updateStatusSchema,
@@ -42,6 +43,44 @@ ordersRouter.post('/', createLimiter, validate(createOrderSchema), async (req, r
     (req.headers['x-forwarded-for'] as string | undefined)?.split(',')[0]?.trim() ||
     req.socket.remoteAddress ||
     '';
+
+  // Reserva de estoque: agrega quantidade por productId e decrementa
+  // atomicamente. Se algum item não tiver estoque, reverte os já reservados.
+  const reservations = new Map<number, number>();
+  for (const item of items) {
+    if (typeof item.productId !== 'number') continue;
+    reservations.set(item.productId, (reservations.get(item.productId) ?? 0) + item.quantity);
+  }
+
+  const reserved: { productId: number; qty: number }[] = [];
+  for (const [productId, qty] of reservations) {
+    const updated = await Product.findOneAndUpdate(
+      { productId, active: true, stock: { $gte: qty } },
+      { $inc: { stock: -qty } },
+      { new: true }
+    ).lean();
+
+    if (!updated) {
+      // Rollback do que já foi reservado
+      for (const r of reserved) {
+        await Product.updateOne({ productId: r.productId }, { $inc: { stock: r.qty } }).catch(
+          (err) => logger.error({ err, productId: r.productId }, 'Rollback de estoque falhou')
+        );
+      }
+      const existing = await Product.findOne({ productId }).lean();
+      const name = existing?.name ?? `Produto #${productId}`;
+      const reason = !existing
+        ? 'produto não encontrado'
+        : !existing.active
+          ? 'indisponível'
+          : `só restam ${existing.stock} unid.`;
+      return res.status(409).json({
+        error: `Estoque insuficiente para "${name}" — ${reason}.`,
+        productId,
+      });
+    }
+    reserved.push({ productId, qty });
+  }
 
   const order = await Order.create({
     customer: data.customer,
@@ -263,6 +302,18 @@ ordersRouter.patch(
       void applyOrderCancellation(order.customer.phone, order.total).catch((err) =>
         logger.error({ err }, 'applyOrderCancellation falhou')
       );
+
+      // Estoque: devolve as unidades reservadas
+      const restock = new Map<number, number>();
+      for (const item of order.items ?? []) {
+        if (typeof item.productId !== 'number') continue;
+        restock.set(item.productId, (restock.get(item.productId) ?? 0) + item.quantity);
+      }
+      for (const [productId, qty] of restock) {
+        void Product.updateOne({ productId }, { $inc: { stock: qty } }).catch((err) =>
+          logger.error({ err, productId }, 'Restock pós-cancelamento falhou')
+        );
+      }
     }
 
     logger.info({ orderId: order._id, status, by: req.user?.username }, '🔄 Status alterado');
