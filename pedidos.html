@@ -45,8 +45,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
     <style>
+        :root {
+            --sat: env(safe-area-inset-top, 0px);
+            --sab: env(safe-area-inset-bottom, 0px);
+            --sal: env(safe-area-inset-left, 0px);
+            --sar: env(safe-area-inset-right, 0px);
+        }
+        html, body {
+            /* Cobre o backdrop da Dynamic Island sem ficar barra cinza */
+            background-color: #F8FAF9;
+        }
         body {
-            background-color: #F8FAF9; color: #4B5563; font-family: 'Inter', sans-serif;
+            color: #4B5563; font-family: 'Inter', sans-serif;
+            padding-left: var(--sal);
+            padding-right: var(--sar);
         }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -58,6 +70,9 @@
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border-bottom: 1px solid rgba(16, 185, 129, 0.12);
+            /* Estende o glass por baixo da Dynamic Island */
+            padding-top: calc(0.65rem + var(--sat));
+            padding-bottom: 0.65rem;
         }
 
         .input-field {
@@ -119,10 +134,13 @@
         }
 
         .nav-tab {
-            display: inline-flex; align-items: center; gap: 0.5rem;
-            padding: 0.625rem 1rem; border-radius: 0.75rem; font-size: 0.85rem;
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.55rem 0.7rem; border-radius: 0.65rem; font-size: 0.8rem;
             font-weight: 700; color: #4B5563; cursor: pointer; transition: all 0.15s;
-            background: transparent; border: none;
+            background: transparent; border: none; white-space: nowrap;
+        }
+        @media (min-width: 640px) {
+            .nav-tab { padding: 0.625rem 1rem; font-size: 0.85rem; gap: 0.5rem; }
         }
         .nav-tab:hover { background: rgba(16,185,129,0.08); color: #047857; }
         .nav-tab.active { background: #0A2517; color: #fff; }
@@ -176,20 +194,193 @@
 
         .stat-card {
             background: #fff; border: 1px solid #F3F4F6; border-radius: 1rem;
-            padding: 1.25rem; position: relative; overflow: hidden;
+            padding: 0.85rem; position: relative; overflow: hidden;
+        }
+        @media (min-width: 640px) {
+            .stat-card { padding: 1.25rem; }
         }
         .stat-card-label {
-            font-size: 0.7rem; font-weight: 800; text-transform: uppercase;
-            letter-spacing: 0.06em; color: #6B7280;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #6B7280;
+        }
+        @media (min-width: 640px) {
+            .stat-card-label { font-size: 0.7rem; letter-spacing: 0.06em; }
         }
         .stat-card-value {
             font-family: 'Outfit', sans-serif; font-weight: 900;
-            font-size: 1.75rem; line-height: 1; margin-top: 0.5rem;
+            font-size: 1.35rem; line-height: 1; margin-top: 0.45rem;
+        }
+        @media (min-width: 640px) {
+            .stat-card-value { font-size: 1.75rem; margin-top: 0.5rem; }
         }
 
         .hidden-soft { display: none !important; }
 
+        /* =================== ESTOQUE (Products) =================== */
+        .product-card {
+            background: #fff;
+            border: 1px solid #F3F4F6;
+            border-radius: 1rem;
+            overflow: hidden;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-card:hover {
+            border-color: #E5E7EB;
+            box-shadow: 0 8px 24px -12px rgba(10, 37, 23, 0.08);
+        }
+        .product-card.is-inactive { opacity: 0.6; }
+        .product-card.is-low { border-color: #FDE68A; background: #FFFBEB; }
+        .product-card.is-out { border-color: #FECDD3; background: #FFF1F2; }
+
+        .product-image {
+            background: #F9FAFB;
+            height: 96px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.4rem;
+            position: relative;
+        }
+        @media (min-width: 640px) {
+            .product-image { height: 120px; padding: 0.5rem; }
+        }
+        .product-image img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .product-stock-pill {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(4px);
+            border-radius: 999px;
+            padding: 0.2rem 0.6rem;
+            font-size: 0.7rem;
+            font-weight: 800;
+            border: 1px solid #E5E7EB;
+        }
+        .product-stock-pill.low { color: #B45309; border-color: #FCD34D; background: #FEF3C7; }
+        .product-stock-pill.out { color: #BE123C; border-color: #FCA5A5; background: #FEE2E2; }
+        .product-stock-pill.ok { color: #047857; border-color: #A7F3D0; background: #ECFDF5; }
+
+        /* Inline-edit "shell": looks like text, becomes input on click */
+        .inline-edit {
+            display: inline-flex;
+            align-items: baseline;
+            gap: 0.15rem;
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.4rem;
+            cursor: text;
+            transition: background 0.15s;
+            border: 1px dashed transparent;
+        }
+        .inline-edit:hover { background: #F3F4F6; border-color: #D1D5DB; }
+        .inline-edit input {
+            background: transparent;
+            border: none;
+            outline: none;
+            font: inherit;
+            color: inherit;
+            width: 100%;
+            min-width: 0;
+            padding: 0;
+        }
+        .inline-edit.editing { background: #fff; border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1); }
+        .inline-edit.saving { background: #FEF3C7; border-color: #FBBF24; }
+
+        /* Affordance visual reforçada para o preço: borda tracejada
+           verde clara + ícone de lápis, fica óbvio que é clicável. */
+        .price-edit {
+            border: 1px dashed rgba(16, 185, 129, 0.35);
+            background: rgba(16, 185, 129, 0.04);
+            cursor: pointer;
+        }
+        .price-edit:hover {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: #10B981;
+            border-style: solid;
+        }
+        .price-edit:hover .price-edit-icon { color: #10B981; }
+        .price-edit.editing { border-style: solid; background: #fff; }
+
+        .stock-stepper {
+            display: inline-flex;
+            align-items: stretch;
+            border-radius: 0.5rem;
+            background: #F3F4F6;
+            border: 1px solid #E5E7EB;
+            overflow: hidden;
+        }
+        .stock-stepper button {
+            width: 34px;
+            height: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            color: #4B5563;
+            transition: background 0.15s;
+        }
+        .stock-stepper button:hover { background: #E5E7EB; color: #0A2517; }
+        .stock-stepper button:disabled { opacity: 0.4; cursor: not-allowed; }
+        .stock-stepper .stock-value {
+            min-width: 44px;
+            text-align: center;
+            font-weight: 800;
+            font-family: 'Outfit', sans-serif;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 0.4rem;
+            border-left: 1px solid #E5E7EB;
+            border-right: 1px solid #E5E7EB;
+            font-size: 0.9rem;
+        }
+
+        /* Toggle ativo/inativo */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 36px;
+            height: 20px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .switch .slider {
+            position: absolute; inset: 0;
+            background: #D1D5DB;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .switch .slider::before {
+            content: ""; position: absolute;
+            width: 14px; height: 14px;
+            left: 3px; top: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .switch input:checked + .slider { background: #10B981; }
+        .switch input:checked + .slider::before { transform: translateX(16px); }
+
         /* =================== PRINT (Comanda) =================== */
+        /* Bottom-sheet em mobile respeita home indicator */
+        @media (max-width: 639.98px) {
+            .bottom-sheet-safe {
+                padding-bottom: calc(0.5rem + var(--sab)) !important;
+            }
+        }
+
         @media print {
             body * { visibility: hidden !important; }
             #printArea, #printArea * { visibility: visible !important; }
@@ -224,10 +415,10 @@
         .print-comanda .pc-footer { margin-top: 16px; font-size: 10px; color: #888; text-align: center; }
     </style>
 </head>
-<body class="antialiased pb-24">
+<body class="antialiased" style="padding-bottom: calc(6rem + var(--sab));">
 
     <!-- =================== TOAST =================== -->
-    <div id="toastContainer" class="fixed top-4 right-4 z-[100] flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm"></div>
+    <div id="toastContainer" class="fixed right-4 z-[100] flex flex-col gap-2 pointer-events-none w-[calc(100%-2rem)] sm:w-auto max-w-sm" style="top: calc(1rem + var(--sat));"></div>
 
     <!-- =================== LOGIN =================== -->
     <section id="loginScreen" class="fixed inset-0 z-50 bg-brand-bg flex items-center justify-center p-4">
@@ -276,11 +467,11 @@
     <main id="dashboard" class="hidden-soft">
 
         <!-- HEADER -->
-        <header class="sticky top-0 w-full z-40 glass-header py-3 shadow-sm">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between gap-2">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-green to-emerald-700 flex items-center justify-center shadow-md shadow-brand-green/20 flex-shrink-0">
-                        <span class="font-display font-black text-white text-base">105</span>
+        <header class="sticky top-0 w-full z-40 glass-header shadow-sm">
+            <div class="max-w-7xl mx-auto px-3 sm:px-6 flex items-center justify-between gap-1.5 sm:gap-2">
+                <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-brand-green to-emerald-700 flex items-center justify-center shadow-md shadow-brand-green/20 flex-shrink-0">
+                        <span class="font-display font-black text-white text-sm sm:text-base">105</span>
                     </div>
                     <div class="flex-col leading-none hidden sm:flex">
                         <span class="font-display font-black text-base text-brand-dark tracking-tight">100 Cinco</span>
@@ -288,7 +479,7 @@
                     </div>
                 </div>
 
-                <nav class="flex items-center gap-1 flex-1 justify-center max-w-md">
+                <nav class="flex items-center gap-0.5 sm:gap-1 flex-1 justify-center max-w-md">
                     <button class="nav-tab active" data-view="dashboard" id="navDashboard">
                         <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
                         <span class="hidden sm:inline">Dashboard</span>
@@ -302,21 +493,26 @@
                         <i data-lucide="users" class="w-4 h-4"></i>
                         <span class="hidden sm:inline">Clientes</span>
                     </button>
+                    <button class="nav-tab" data-view="products" id="navProducts">
+                        <i data-lucide="package-2" class="w-4 h-4"></i>
+                        <span class="hidden sm:inline">Estoque</span>
+                        <span id="navProductsBadge" class="bg-brand-mango text-white text-[10px] font-bold rounded-full px-1.5 py-0.5 min-w-[1.25rem] text-center hidden-soft" title="Itens com estoque baixo ou esgotado">0</span>
+                    </button>
                 </nav>
 
-                <div class="flex items-center gap-1.5 sm:gap-2">
+                <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
                     <div id="connectionStatus" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white rounded-full border border-gray-200 text-xs font-bold text-gray-600">
                         <span class="connection-dot offline" id="connectionDot"></span>
                         <span id="connectionText">Conectando...</span>
                     </div>
-                    <button id="soundToggle" title="Som" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
-                        <i data-lucide="volume-2" id="soundIcon" class="w-4 h-4"></i>
+                    <button id="soundToggle" title="Som" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
+                        <i data-lucide="volume-2" id="soundIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                     </button>
-                    <button id="notifyToggle" title="Notificações push" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
-                        <i data-lucide="bell" id="bellIcon" class="w-4 h-4"></i>
+                    <button id="notifyToggle" title="Notificações push" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-dark hover:border-brand-green hover:text-brand-green transition-colors">
+                        <i data-lucide="bell" id="bellIcon" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                     </button>
-                    <button id="logoutBtn" title="Sair" class="w-9 h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-berry hover:bg-rose-50 hover:border-rose-200 transition-colors">
-                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    <button id="logoutBtn" title="Sair" class="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center bg-white rounded-full border border-gray-200 text-brand-berry hover:bg-rose-50 hover:border-rose-200 transition-colors">
+                        <i data-lucide="log-out" class="w-3.5 h-3.5 sm:w-4 sm:h-4"></i>
                     </button>
                 </div>
             </div>
@@ -349,7 +545,7 @@
         </div>
 
         <!-- ============ PERIOD SELECTOR (compartilhado) ============ -->
-        <section class="max-w-7xl mx-auto px-4 sm:px-6 pt-5">
+        <section class="max-w-7xl mx-auto px-3 sm:px-6 pt-5">
             <div class="bg-white border border-gray-100 rounded-2xl p-3 sm:p-4 shadow-sm flex flex-col sm:flex-row sm:items-center gap-3">
                 <div class="flex items-center gap-2 flex-shrink-0">
                     <i data-lucide="calendar-days" class="w-4 h-4 text-brand-green"></i>
@@ -374,7 +570,7 @@
         </section>
 
         <!-- ============ VIEW: DASHBOARD ============ -->
-        <section id="viewDashboard" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12">
+        <section id="viewDashboard" class="max-w-7xl mx-auto px-3 sm:px-6 pt-6 pb-12">
 
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
                 <div>
@@ -466,7 +662,7 @@
         </section>
 
         <!-- ============ VIEW: ORDERS ============ -->
-        <section id="viewOrders" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12 hidden-soft">
+        <section id="viewOrders" class="max-w-7xl mx-auto px-3 sm:px-6 pt-6 pb-12 hidden-soft">
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Pedidos</h2>
@@ -532,7 +728,7 @@
         </section>
 
         <!-- ============ VIEW: CUSTOMERS ============ -->
-        <section id="viewCustomers" class="max-w-7xl mx-auto px-4 sm:px-6 pt-6 pb-12 hidden-soft">
+        <section id="viewCustomers" class="max-w-7xl mx-auto px-3 sm:px-6 pt-6 pb-12 hidden-soft">
             <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
                 <div>
                     <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Clientes</h2>
@@ -590,13 +786,117 @@
 
             <div id="customersList" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"></div>
         </section>
+
+        <!-- ============ VIEW: PRODUCTS / ESTOQUE ============ -->
+        <section id="viewProducts" class="max-w-7xl mx-auto px-3 sm:px-6 pt-6 pb-12 hidden-soft">
+            <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-5">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-display font-black text-brand-dark">Estoque</h2>
+                    <p class="text-sm text-brand-text mt-1">Ajuste preços, controle estoque e ative/desative produtos da loja.</p>
+                </div>
+                <div class="flex flex-wrap gap-2">
+                    <button id="exportProductsCsvBtn" class="btn-action btn-ghost">
+                        <i data-lucide="file-spreadsheet" class="w-3.5 h-3.5"></i>Exportar CSV
+                    </button>
+                    <button id="newProductBtn" class="btn-action btn-primary">
+                        <i data-lucide="plus" class="w-3.5 h-3.5"></i>Novo produto
+                    </button>
+                </div>
+            </div>
+
+            <!-- KPIs estoque -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-5">
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Total</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-green/10 text-brand-green flex items-center justify-center">
+                            <i data-lucide="package" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-dark" id="kpiProdTotal">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Ativos</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-acai/10 text-brand-acai flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-acai" id="kpiProdActive">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Estoque baixo</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-mango/10 text-brand-mango flex items-center justify-center">
+                            <i data-lucide="alert-triangle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-mango" id="kpiProdLow">0</div>
+                </div>
+                <div class="stat-card">
+                    <div class="flex items-start justify-between">
+                        <div class="stat-card-label">Esgotados</div>
+                        <div class="w-8 h-8 rounded-lg bg-brand-berry/10 text-brand-berry flex items-center justify-center">
+                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+                    <div class="stat-card-value text-brand-berry" id="kpiProdOut">0</div>
+                </div>
+            </div>
+
+            <!-- Busca -->
+            <div class="mb-4 relative">
+                <i data-lucide="search" class="w-4 h-4 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                <input id="productSearch" type="search" placeholder="Buscar produto por nome..."
+                    class="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green/20 focus:border-brand-green transition-all text-sm">
+            </div>
+
+            <!-- Filtros -->
+            <div class="flex gap-2 overflow-x-auto pb-2 mb-3 hide-scrollbar -mx-4 px-4 sm:mx-0 sm:px-0">
+                <button class="filter-tab active" data-product-filter="all">
+                    <i data-lucide="layers" class="w-3 h-3"></i> Todos
+                    <span class="tab-count" id="prod-count-all">0</span>
+                </button>
+                <button class="filter-tab" data-product-filter="active">
+                    <i data-lucide="check-circle-2" class="w-3 h-3"></i> Ativos
+                    <span class="tab-count" id="prod-count-active">0</span>
+                </button>
+                <button class="filter-tab" data-product-filter="low_stock">
+                    <i data-lucide="alert-triangle" class="w-3 h-3"></i> Estoque baixo
+                    <span class="tab-count" id="prod-count-low_stock">0</span>
+                </button>
+                <button class="filter-tab" data-product-filter="out_of_stock">
+                    <i data-lucide="x-circle" class="w-3 h-3"></i> Esgotados
+                    <span class="tab-count" id="prod-count-out_of_stock">0</span>
+                </button>
+                <button class="filter-tab" data-product-filter="inactive">
+                    <i data-lucide="eye-off" class="w-3 h-3"></i> Inativos
+                    <span class="tab-count" id="prod-count-inactive">0</span>
+                </button>
+            </div>
+
+            <div id="productsLoading" class="text-center py-20">
+                <i data-lucide="loader-2" class="w-8 h-8 text-brand-green mx-auto spinning"></i>
+                <p class="text-sm text-brand-text mt-3">Carregando produtos...</p>
+            </div>
+
+            <div id="productsEmpty" class="hidden-soft text-center py-20">
+                <div class="w-20 h-20 mx-auto bg-brand-green/10 rounded-2xl flex items-center justify-center mb-4">
+                    <i data-lucide="package-2" class="w-10 h-10 text-brand-green"></i>
+                </div>
+                <h3 class="font-display font-bold text-lg text-brand-dark mb-1">Nenhum produto aqui</h3>
+                <p class="text-sm text-brand-text">Ajuste o filtro ou cadastre um novo produto.</p>
+            </div>
+
+            <div id="productsList" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-4"></div>
+        </section>
     </main>
 
     <!-- =================== CUSTOMER MODAL =================== -->
     <div id="customerModal" class="fixed inset-0 z-50 hidden-soft">
         <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="customerModalBackdrop"></div>
         <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-6">
-            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+            <div class="bottom-sheet-safe bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-2xl w-full max-h-[92vh] overflow-hidden flex flex-col">
                 <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
                     <h3 class="font-display font-black text-lg text-brand-dark">Cliente</h3>
                     <button onclick="closeCustomerModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
@@ -608,11 +908,27 @@
         </div>
     </div>
 
+    <!-- =================== PRODUCT EDIT MODAL =================== -->
+    <div id="productModal" class="fixed inset-0 z-50 hidden-soft">
+        <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="productModalBackdrop"></div>
+        <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-6">
+            <div class="bottom-sheet-safe bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-xl w-full max-h-[92vh] overflow-hidden flex flex-col">
+                <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
+                    <h3 class="font-display font-black text-lg text-brand-dark" id="productModalTitle">Editar produto</h3>
+                    <button onclick="closeProductModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                    </button>
+                </div>
+                <div id="productModalBody" class="overflow-y-auto p-5 flex-1"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- =================== ORDER DETAIL MODAL =================== -->
     <div id="orderModal" class="fixed inset-0 z-50 hidden-soft">
         <div class="absolute inset-0 bg-brand-dark/60 backdrop-blur-sm" id="modalBackdrop"></div>
         <div class="absolute inset-x-0 bottom-0 sm:inset-0 sm:flex sm:items-center sm:justify-center sm:p-6">
-            <div class="bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-lg w-full max-h-[92vh] overflow-hidden flex flex-col">
+            <div class="bottom-sheet-safe bg-white rounded-t-3xl sm:rounded-3xl shadow-float max-w-lg w-full max-h-[92vh] overflow-hidden flex flex-col">
                 <div class="flex items-center justify-between p-5 border-b border-gray-100 flex-shrink-0">
                     <h3 class="font-display font-black text-lg text-brand-dark">Detalhes do Pedido</h3>
                     <button onclick="closeOrderModal()" class="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center text-gray-500">

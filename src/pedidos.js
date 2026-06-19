@@ -42,6 +42,11 @@
         customerSearch: '',
         customerSort: 'lastOrderAt',
         customerStats: null,
+        products: [],
+        productSearch: '',
+        productFilter: 'all',
+        productStats: null,
+        productsLoaded: false,
     };
 
     const STATUS_FLOW = {
@@ -571,9 +576,11 @@
         $('viewDashboard').classList.toggle('hidden-soft', view !== 'dashboard');
         $('viewOrders').classList.toggle('hidden-soft', view !== 'orders');
         $('viewCustomers').classList.toggle('hidden-soft', view !== 'customers');
+        $('viewProducts').classList.toggle('hidden-soft', view !== 'products');
         window.scrollTo({ top: 0, behavior: 'smooth' });
         if (view === 'dashboard') refreshStats().catch(() => {});
         if (view === 'customers') loadCustomers().catch(() => {});
+        if (view === 'products') loadProducts().catch(() => {});
     }
 
     // ---------- Customers ----------
@@ -780,6 +787,498 @@
         const date = new Date().toISOString().slice(0, 10);
         downloadCsv(`100cinco_clientes_${date}.csv`, rows);
         showToast(`${state.customers.length} clientes exportados.`, 'success');
+    }
+
+    // ---------- Products / Estoque ----------
+    function productStatusFlag(p) {
+        if (!p.active) return 'inactive';
+        if (p.stock === 0) return 'out';
+        if (p.stock <= p.lowStockThreshold) return 'low';
+        return 'ok';
+    }
+
+    async function loadProducts(opts = {}) {
+        const silent = opts.silent === true;
+        if (!silent) $('productsLoading').classList.remove('hidden-soft');
+        try {
+            const qs = new URLSearchParams();
+            if (state.productSearch) qs.set('search', state.productSearch);
+            if (state.productFilter && state.productFilter !== 'all') qs.set('filter', state.productFilter);
+            qs.set('limit', '500');
+            const data = await api(`/api/products/admin?${qs}`);
+            state.products = data.products || [];
+            state.productStats = data.stats || { total: 0, active: 0, lowStock: 0, outOfStock: 0 };
+            state.productsLoaded = true;
+            renderProducts();
+            updateProductsBadge();
+        } catch (e) {
+            showToast(`Erro ao carregar produtos: ${e.message}`, 'error');
+        } finally {
+            $('productsLoading').classList.add('hidden-soft');
+        }
+    }
+
+    function updateProductsBadge() {
+        const s = state.productStats;
+        if (!s) return;
+        const alert = (s.lowStock || 0) + (s.outOfStock || 0);
+        const badge = $('navProductsBadge');
+        if (badge) {
+            badge.textContent = alert;
+            badge.classList.toggle('hidden-soft', alert === 0);
+        }
+    }
+
+    function renderProducts() {
+        const list = $('productsList');
+        const empty = $('productsEmpty');
+        const s = state.productStats || { total: 0, active: 0, lowStock: 0, outOfStock: 0 };
+
+        $('kpiProdTotal').textContent = fmtNum(s.total);
+        $('kpiProdActive').textContent = fmtNum(s.active);
+        $('kpiProdLow').textContent = fmtNum(s.lowStock);
+        $('kpiProdOut').textContent = fmtNum(s.outOfStock);
+
+        // Tab counts são contagens DO QUE ESTÁ VISÍVEL no filtro atual.
+        // Pro user ter um count global por filtro, derivamos do stats:
+        $('prod-count-all').textContent = s.total;
+        $('prod-count-active').textContent = s.active;
+        $('prod-count-low_stock').textContent = s.lowStock;
+        $('prod-count-out_of_stock').textContent = s.outOfStock;
+        $('prod-count-inactive').textContent = (s.total - s.active);
+
+        if (!state.products.length) {
+            list.innerHTML = '';
+            empty.classList.remove('hidden-soft');
+            return;
+        }
+        empty.classList.add('hidden-soft');
+        list.innerHTML = state.products.map((p) => productCardHtml(p)).join('');
+        if (window.lucide) lucide.createIcons();
+    }
+
+    function productCardHtml(p) {
+        const flag = productStatusFlag(p);
+        const cardCls = [
+            'product-card',
+            'card-enter',
+            flag === 'inactive' ? 'is-inactive' : '',
+            flag === 'low' ? 'is-low' : '',
+            flag === 'out' ? 'is-out' : '',
+        ].filter(Boolean).join(' ');
+
+        const stockPillCls = flag === 'out' ? 'out' : flag === 'low' ? 'low' : 'ok';
+        const stockPillLabel = flag === 'out' ? 'Esgotado' : flag === 'low' ? `${p.stock} (baixo)` : `${p.stock} em estoque`;
+
+        const imgHtml = p.image
+            ? `<img src="${escapeHtml(p.image)}" alt="" loading="lazy">`
+            : `<div class="text-gray-300"><i data-lucide="image-off" class="w-10 h-10"></i></div>`;
+
+        return `
+        <article class="${cardCls}" data-product-id="${p.productId}">
+            <div class="product-image">
+                ${imgHtml}
+                <span class="product-stock-pill ${stockPillCls}">${escapeHtml(stockPillLabel)}</span>
+            </div>
+
+            <div class="p-2.5 sm:p-4 flex-1 flex flex-col gap-2.5 sm:gap-3">
+                <div>
+                    <h3 class="font-display font-bold text-brand-dark text-[13px] sm:text-sm leading-tight line-clamp-2 min-h-[2.2em]">${p.name}</h3>
+                    <p class="text-[10px] sm:text-[11px] text-gray-400 mt-0.5 truncate">${escapeHtml(p.quantityType || '—')}</p>
+                </div>
+
+                <div class="flex items-center justify-between gap-1.5">
+                    <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-400">Preço</div>
+                    <div class="price-edit inline-edit text-sm sm:text-base font-display font-black text-brand-green"
+                         data-edit-field="price"
+                         data-product-id="${p.productId}"
+                         data-current-value="${p.price}"
+                         onclick="window.startInlineEdit(this)"
+                         title="Clique pra editar o preço">
+                        <span>R$ ${p.price.toFixed(2).replace('.', ',')}</span>
+                        <i data-lucide="pencil" class="w-3 h-3 text-brand-green/50 price-edit-icon"></i>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-1.5">
+                    <div class="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-gray-400">Estoque</div>
+                    <div class="stock-stepper" title="Ajuste rápido">
+                        <button onclick="window.adjustStock(${p.productId}, -1)" ${p.stock <= 0 ? 'disabled' : ''} aria-label="Diminuir 1">
+                            <i data-lucide="minus" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <div class="stock-value inline-edit"
+                             data-edit-field="stock"
+                             data-product-id="${p.productId}"
+                             data-current-value="${p.stock}"
+                             onclick="window.startInlineEdit(this)"
+                             title="Clique pra definir">${p.stock}</div>
+                        <button onclick="window.adjustStock(${p.productId}, 1)" aria-label="Aumentar 1">
+                            <i data-lucide="plus" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between gap-1.5 pt-2 border-t border-gray-100 mt-auto">
+                    <label class="flex items-center gap-1.5 cursor-pointer select-none" title="Mostrar/ocultar na loja">
+                        <span class="switch">
+                            <input type="checkbox" ${p.active ? 'checked' : ''} onchange="window.toggleProductActive(${p.productId}, this.checked)">
+                            <span class="slider"></span>
+                        </span>
+                        <span class="text-[10px] sm:text-[11px] font-bold ${p.active ? 'text-brand-green' : 'text-gray-400'} hidden sm:inline">${p.active ? 'Ativo' : 'Inativo'}</span>
+                    </label>
+                    <div class="flex items-center gap-1">
+                        <button onclick="window.openProductEditModal(${p.productId})" class="w-8 h-8 rounded-lg bg-gray-100 hover:bg-brand-green hover:text-white text-gray-500 flex items-center justify-center transition-colors" title="Editar tudo">
+                            <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="window.confirmDeleteProduct(${p.productId})" class="w-8 h-8 rounded-lg bg-rose-50 hover:bg-brand-berry hover:text-white text-brand-berry flex items-center justify-center transition-colors" title="Excluir">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </article>`;
+    }
+
+    function findProduct(productId) {
+        return state.products.find((p) => p.productId === productId);
+    }
+
+    function patchLocalProduct(updated) {
+        const idx = state.products.findIndex((p) => p.productId === updated.productId);
+        if (idx >= 0) state.products[idx] = updated;
+    }
+
+    // Inline edit UX para preço e estoque
+    window.startInlineEdit = (el) => {
+        if (el.classList.contains('editing') || el.classList.contains('saving')) return;
+        const field = el.dataset.editField;
+        const productId = Number(el.dataset.productId);
+        const currentRaw = el.dataset.currentValue;
+        const isPrice = field === 'price';
+
+        const originalHtml = el.innerHTML;
+        el.classList.add('editing');
+        el.innerHTML = `<input type="${isPrice ? 'text' : 'number'}" inputmode="${isPrice ? 'decimal' : 'numeric'}" ${isPrice ? '' : 'min="0"'} value="${isPrice ? Number(currentRaw).toFixed(2).replace('.', ',') : currentRaw}" />`;
+
+        const input = el.querySelector('input');
+        input.focus();
+        input.select();
+
+        let done = false;
+        const cancel = () => {
+            if (done) return; done = true;
+            el.classList.remove('editing');
+            el.innerHTML = originalHtml;
+        };
+        const commit = async () => {
+            if (done) return; done = true;
+            const raw = input.value.trim().replace(/\./g, '').replace(',', '.');
+            const num = Number(raw);
+            if (!Number.isFinite(num) || num < 0 || (!isPrice && !Number.isInteger(num))) {
+                showToast(`Valor inválido pra ${isPrice ? 'preço' : 'estoque'}.`, 'error');
+                el.classList.remove('editing');
+                el.innerHTML = originalHtml;
+                return;
+            }
+            if (Number(num) === Number(currentRaw)) {
+                el.classList.remove('editing');
+                el.innerHTML = originalHtml;
+                return;
+            }
+
+            el.classList.remove('editing');
+            el.classList.add('saving');
+            el.innerHTML = isPrice ? `R$ ${num.toFixed(2).replace('.', ',')}` : String(num);
+
+            try {
+                let updated;
+                if (isPrice) {
+                    const data = await api(`/api/products/${productId}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ price: num }),
+                    });
+                    updated = data.product;
+                    showToast(`Preço atualizado: R$ ${num.toFixed(2).replace('.', ',')}`, 'success');
+                } else {
+                    const data = await api(`/api/products/${productId}/stock/set`, {
+                        method: 'POST',
+                        body: JSON.stringify({ stock: num }),
+                    });
+                    updated = data.product;
+                    showToast(`Estoque definido: ${num}`, 'success');
+                }
+                patchLocalProduct(updated);
+                // Atualiza stats locais ao mudar estoque/ativo
+                if (!isPrice) await refreshProductStats();
+                renderProducts();
+            } catch (e) {
+                showToast(`Erro: ${e.message}`, 'error');
+                // Reverte visual
+                await loadProducts({ silent: true });
+            } finally {
+                el.classList.remove('saving');
+            }
+        };
+
+        input.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') { ev.preventDefault(); commit(); }
+            if (ev.key === 'Escape') { ev.preventDefault(); cancel(); }
+        });
+        input.addEventListener('blur', commit);
+    };
+
+    async function refreshProductStats() {
+        // Pra evitar request extra grande, recalcula localmente a partir dos produtos visíveis
+        // quando o filtro é "all" — caso contrário, pede pro server.
+        if (state.productFilter !== 'all' || state.productSearch) {
+            try {
+                const data = await api('/api/products/admin?filter=all&limit=1');
+                state.productStats = data.stats;
+            } catch {}
+            return;
+        }
+        const stats = { total: state.products.length, active: 0, lowStock: 0, outOfStock: 0 };
+        for (const p of state.products) {
+            if (p.active) stats.active++;
+            if (p.stock === 0) stats.outOfStock++;
+            else if (p.stock <= p.lowStockThreshold) stats.lowStock++;
+        }
+        state.productStats = stats;
+    }
+
+    window.adjustStock = async (productId, delta) => {
+        const p = findProduct(productId);
+        if (!p) return;
+        if (p.stock + delta < 0) { showToast('Estoque já está em zero.', 'info'); return; }
+        try {
+            const data = await api(`/api/products/${productId}/stock/adjust`, {
+                method: 'POST',
+                body: JSON.stringify({ delta }),
+            });
+            patchLocalProduct(data.product);
+            await refreshProductStats();
+            renderProducts();
+            updateProductsBadge();
+        } catch (e) {
+            showToast(`Erro: ${e.message}`, 'error');
+        }
+    };
+
+    window.toggleProductActive = async (productId, active) => {
+        try {
+            const data = await api(`/api/products/${productId}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ active }),
+            });
+            patchLocalProduct(data.product);
+            await refreshProductStats();
+            renderProducts();
+            updateProductsBadge();
+            showToast(active ? 'Produto ativado.' : 'Produto ocultado da loja.', 'success');
+        } catch (e) {
+            showToast(`Erro: ${e.message}`, 'error');
+        }
+    };
+
+    window.openProductEditModal = (productId) => openProductModal({ mode: 'edit', productId });
+    function openProductCreateModal() { openProductModal({ mode: 'create' }); }
+
+    function openProductModal({ mode, productId }) {
+        const isCreate = mode === 'create';
+        const p = isCreate
+            ? { productId: '', name: '', image: '', quantityType: '', description: '', category: '', price: 0, stock: 0, lowStockThreshold: 5, active: true, sortOrder: 0 }
+            : findProduct(productId);
+        if (!p) return;
+
+        $('productModalTitle').textContent = isCreate ? 'Novo produto' : `Editar — ${stripHtml(p.name)}`;
+
+        $('productModalBody').innerHTML = `
+            <form id="productForm" class="space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-[120px_1fr] gap-4 items-start">
+                    <div>
+                        <div class="text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Imagem</div>
+                        <div class="aspect-square bg-gray-50 rounded-xl flex items-center justify-center overflow-hidden border border-gray-200" id="productImagePreview">
+                            ${p.image ? `<img src="${escapeHtml(p.image)}" alt="" class="max-w-full max-h-full object-contain">` : '<i data-lucide="image" class="w-8 h-8 text-gray-300"></i>'}
+                        </div>
+                    </div>
+                    <div class="flex-1 space-y-3">
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Nome</label>
+                            <input id="pfName" type="text" class="input-field" value="${escapeHtml(p.name)}" required maxlength="160" placeholder="Ex.: Polpa de Açaí">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">URL da imagem</label>
+                            <input id="pfImage" type="text" class="input-field" value="${escapeHtml(p.image || '')}" maxlength="500" placeholder="assets/... ou https://..." oninput="window.updateProductImagePreview(this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Embalagem / Quantidade</label>
+                        <input id="pfQuantityType" type="text" class="input-field" value="${escapeHtml(p.quantityType || '')}" maxlength="80" placeholder="Ex.: 10 unid. 100g">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Categoria</label>
+                        <input id="pfCategory" type="text" class="input-field" value="${escapeHtml(p.category || '')}" maxlength="60" placeholder="Açaí, Polpas, Mix, Frutas...">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Preço (R$)</label>
+                        <input id="pfPrice" type="number" step="0.01" min="0" class="input-field" value="${p.price}" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Estoque</label>
+                        <input id="pfStock" type="number" min="0" class="input-field" value="${p.stock}" required>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5" title="Avisa quando o estoque cair pra esse valor ou menos">Limite estoque baixo</label>
+                        <input id="pfThreshold" type="number" min="0" class="input-field" value="${p.lowStockThreshold}" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-gray-400 mb-1.5">Descrição (HTML opcional)</label>
+                    <textarea id="pfDescription" class="input-field" rows="4" placeholder="Informações do produto, valor nutricional, etc.">${escapeHtml(p.description || '')}</textarea>
+                </div>
+
+                <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+                    <div class="flex items-center gap-3">
+                        <span class="switch">
+                            <input type="checkbox" id="pfActive" ${p.active ? 'checked' : ''}>
+                            <span class="slider"></span>
+                        </span>
+                        <div>
+                            <div class="text-sm font-bold text-brand-dark">Ativo na loja</div>
+                            <div class="text-[11px] text-gray-500">Desativado: não aparece pra clientes (mas mantém o histórico)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="productFormError" class="hidden-soft text-sm text-brand-berry bg-rose-50 border border-rose-200 rounded-xl px-3 py-2"></div>
+
+                <div class="flex gap-2 pt-2">
+                    <button type="button" onclick="closeProductModal()" class="btn-action btn-ghost flex-1">Cancelar</button>
+                    <button type="submit" class="btn-action btn-primary flex-1" id="pfSubmitBtn">
+                        <i data-lucide="${isCreate ? 'plus' : 'save'}" class="w-3.5 h-3.5"></i>${isCreate ? 'Criar produto' : 'Salvar alterações'}
+                    </button>
+                </div>
+            </form>`;
+
+        $('productModal').classList.remove('hidden-soft');
+        if (window.lucide) lucide.createIcons();
+
+        $('productForm').addEventListener('submit', (ev) => {
+            ev.preventDefault();
+            submitProductForm(isCreate ? null : p.productId).catch((e) => showProductFormError(e.message));
+        });
+    }
+
+    window.updateProductImagePreview = (url) => {
+        const box = $('productImagePreview');
+        if (!box) return;
+        const trimmed = (url || '').trim();
+        box.innerHTML = trimmed
+            ? `<img src="${escapeHtml(trimmed)}" alt="" class="max-w-full max-h-full object-contain" onerror="this.replaceWith(Object.assign(document.createElement('div'), { textContent: '🖼️ Sem preview' }))">`
+            : '<i data-lucide="image" class="w-8 h-8 text-gray-300"></i>';
+        if (window.lucide) lucide.createIcons();
+    };
+
+    function showProductFormError(msg) {
+        const el = $('productFormError');
+        if (!el) return;
+        el.textContent = msg;
+        el.classList.remove('hidden-soft');
+    }
+
+    async function submitProductForm(productId) {
+        const btn = $('pfSubmitBtn');
+        btn.disabled = true;
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i data-lucide="loader-2" class="w-3.5 h-3.5 spinning"></i>Salvando...';
+        if (window.lucide) lucide.createIcons();
+
+        const payload = {
+            name: $('pfName').value.trim(),
+            image: $('pfImage').value.trim(),
+            quantityType: $('pfQuantityType').value.trim(),
+            category: $('pfCategory').value.trim(),
+            description: $('pfDescription').value,
+            price: Number($('pfPrice').value),
+            stock: Number($('pfStock').value),
+            lowStockThreshold: Number($('pfThreshold').value),
+            active: $('pfActive').checked,
+        };
+
+        try {
+            if (productId === null) {
+                const data = await api('/api/products', {
+                    method: 'POST',
+                    body: JSON.stringify(payload),
+                });
+                state.products.unshift(data.product);
+                showToast('Produto criado.', 'success');
+            } else {
+                const data = await api(`/api/products/${productId}`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(payload),
+                });
+                patchLocalProduct(data.product);
+                showToast('Produto atualizado.', 'success');
+            }
+            await refreshProductStats();
+            renderProducts();
+            updateProductsBadge();
+            closeProductModal();
+        } catch (e) {
+            showProductFormError(e.message);
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            if (window.lucide) lucide.createIcons();
+        }
+    }
+
+    window.closeProductModal = () => $('productModal').classList.add('hidden-soft');
+
+    window.confirmDeleteProduct = async (productId) => {
+        const p = findProduct(productId);
+        if (!p) return;
+        if (!confirm(`Excluir "${stripHtml(p.name)}" permanentemente? Pedidos antigos continuam intactos.`)) return;
+        try {
+            await api(`/api/products/${productId}`, { method: 'DELETE' });
+            state.products = state.products.filter((x) => x.productId !== productId);
+            await refreshProductStats();
+            renderProducts();
+            updateProductsBadge();
+            showToast('Produto excluído.', 'success');
+        } catch (e) {
+            showToast(`Erro: ${e.message}`, 'error');
+        }
+    };
+
+    function exportProductsCsv() {
+        if (!state.products.length) { showToast('Nada pra exportar.', 'info'); return; }
+        const headers = ['ID', 'Nome', 'Categoria', 'Embalagem', 'Preço', 'Estoque', 'Limite baixo', 'Ativo', 'Imagem'];
+        const rows = [headers, ...state.products.map((p) => [
+            p.productId,
+            stripHtml(p.name),
+            p.category || '',
+            p.quantityType || '',
+            (p.price || 0).toFixed(2).replace('.', ','),
+            p.stock,
+            p.lowStockThreshold,
+            p.active ? 'Sim' : 'Não',
+            p.image || '',
+        ])];
+        const date = new Date().toISOString().slice(0, 10);
+        downloadCsv(`100cinco_produtos_${date}.csv`, rows);
+        showToast(`${state.products.length} produtos exportados.`, 'success');
+    }
+
+    function stripHtml(s) {
+        return String(s ?? '').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
     }
 
     // ---------- Dashboard render ----------
@@ -1530,10 +2029,36 @@
             loadCustomers().catch(() => {});
         });
 
+        // ---------- Products view ----------
+        let productSearchTimer;
+        const productSearchInput = $('productSearch');
+        if (productSearchInput) {
+            productSearchInput.addEventListener('input', (e) => {
+                clearTimeout(productSearchTimer);
+                productSearchTimer = setTimeout(() => {
+                    state.productSearch = e.target.value.trim();
+                    loadProducts({ silent: true }).catch(() => {});
+                }, 300);
+            });
+        }
+
+        document.querySelectorAll('[data-product-filter]').forEach((tab) => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('[data-product-filter]').forEach((t) => t.classList.remove('active'));
+                tab.classList.add('active');
+                state.productFilter = tab.dataset.productFilter;
+                loadProducts({ silent: true }).catch(() => {});
+            });
+        });
+
+        $('newProductBtn')?.addEventListener('click', openProductCreateModal);
+        $('exportProductsCsvBtn')?.addEventListener('click', exportProductsCsv);
+        $('productModalBackdrop')?.addEventListener('click', () => window.closeProductModal());
+
         $('modalBackdrop').addEventListener('click', () => closeOrderModal());
         $('customerModalBackdrop').addEventListener('click', () => closeCustomerModal());
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { closeOrderModal(); closeCustomerModal(); }
+            if (e.key === 'Escape') { closeOrderModal(); closeCustomerModal(); window.closeProductModal(); }
         });
 
         document.addEventListener('visibilitychange', () => {
