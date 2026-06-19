@@ -2,6 +2,7 @@
 
 Site de pedidos online com **painel administrativo em tempo real (polling 4s)** para acompanhamento e gestão dos pedidos. Substitui o envio antigo via Telegram por um backend próprio, seguro e profissional — pronto pra rodar na **Vercel**.
 
+
 ## Arquitetura
 
 ```
